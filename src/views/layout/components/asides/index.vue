@@ -35,6 +35,7 @@
         <i class="el-icon-menu"></i>
         <span slot="title">首页</span>
       </el-menu-item>
+
       <template v-for="item in menu">
         <template v-if="item.children.length >= 1">
           <el-submenu :index="item.path" :key="item.path">
@@ -60,6 +61,41 @@
           </el-menu-item>
         </template>
       </template>
+
+      <!-- <el-submenu index="/organEntry">
+        <template slot="title">
+          <i class="el-icon-menu"></i>
+          <span>机构入驻</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="/organEntry/organInfo">机构信息</el-menu-item>
+          <el-menu-item index="/organEntry/manageCard">卡券管理</el-menu-item>
+          <el-menu-item index="/organEntry/manageMoney">资金管理</el-menu-item>
+          <el-menu-item index="/organEntry/accountFlow">账户流水</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>-->
+      <!-- <el-submenu index="/organManage">
+        <template slot="title">
+          <i class="el-icon-menu"></i>
+          <span>机构管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="/organManage/allOrganManage">机构管理</el-menu-item>
+          <el-menu-item index="/organManage/allCardManage">卡券管理</el-menu-item>
+          <el-menu-item index="/organManage/allMoneyManage">资金管理</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>-->
+
+      <!-- <el-submenu index="/integraManage">
+        <template slot="title">
+          <i class="el-icon-menu"></i>
+          <span>积分管理</span>
+        </template>
+        <el-menu-item-group>
+          <el-menu-item index="/integraManage/integraManage">积分管理</el-menu-item>
+          <el-menu-item index="/integraManage/integraFlow">积分流水</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>-->
     </el-menu>
   </el-aside>
 </template>

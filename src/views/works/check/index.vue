@@ -60,7 +60,7 @@
         <el-table-column v-if="isShow" label="作品ID" prop="worksId" :show-overflow-tooltip="true"></el-table-column>
         <el-table-column v-if="isShow" label="作品" prop="imageUrl" :show-overflow-tooltip="true">
           <template slot-scope="scope">
-            <img :src="scope.row.imageUrl" alt style="width:40px;height:40px">
+            <img :src="scope.row.imageUrl" alt style="width:40px;height:40px" />
           </template>
         </el-table-column>
         <el-table-column label="作品标题" prop="title" :show-overflow-tooltip="true"></el-table-column>
@@ -214,7 +214,7 @@
               :src="scope.row.smallUrl"
               style="width:40px;height:40px"
               @click="handleViewsImg(scope.$index)"
-            >
+            />
           </template>
         </el-table-column>
         <el-table-column prop="verifyStatus" label="审核状态">
