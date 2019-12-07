@@ -18,6 +18,7 @@ import * as student from './module/student';
 import * as teacher from './module/teacher';
 import * as CardManagement from './module/CardManagement';
 import * as control from './module/control';
+import * as organEntry from './module/organEntry';
 export default {
   ...device,
   ...content,
@@ -39,4 +40,5 @@ export default {
   ...teacher,
   ...CardManagement,
   ...control,
+  ...organEntry
 }

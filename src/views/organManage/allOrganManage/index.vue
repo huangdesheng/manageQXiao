@@ -37,22 +37,22 @@
           <el-table-column label="序号" type="index"></el-table-column>
           <el-table-column label="机构名称">
             <template slot-scope="scope">
-              <span @click="handleTip(scope.row)" class="on">{{scope.row.name}}</span>
+              <span @click="handleTip(scope.row)" class="on">{{scope.row.title}}</span>
             </template>
           </el-table-column>
-          <el-table-column label="联系老师" prop="teacherName"></el-table-column>
-          <el-table-column label="联系电话" prop="phone"></el-table-column>
-          <el-table-column label="上传时间" prop="time1"></el-table-column>
-          <el-table-column label="审核时间" prop="time2"></el-table-column>
+          <el-table-column label="联系老师" prop="linkMan"></el-table-column>
+          <el-table-column label="联系电话" prop="tele"></el-table-column>
+          <el-table-column label="上传时间" prop="createTime"></el-table-column>
+          <el-table-column label="审核时间" prop="auditTime"></el-table-column>
           <el-table-column label="状态">
             <template slot-scope="scope">
-              <template v-if="scope.row.status === 1">
+              <template v-if="scope.row.state === '0'">
                 <span class="on">待审核</span>
               </template>
-              <template v-if="scope.row.status === 2">
+              <template v-if="scope.row.state === '2'">
                 <span @click="handleStage(scope.row)" class="in">审核不通过</span>
               </template>
-              <template v-if="scope.row.status === 3">
+              <template v-if="scope.row.state === '1'">
                 <span @click="handleStage(scope.row)" class="on">审核通过</span>
               </template>
             </template>
@@ -60,8 +60,24 @@
           <el-table-column label="操作">
             <template slot-scope="scope">
               <template>
-                <el-button size="mini" type="primary" @click="btnCheck(scope.row)">审核</el-button>
-                <el-button size="mini" type="primary">下线</el-button>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="btnCheck(scope.row)"
+                  v-if="scope.row.state == '0'"
+                >审核</el-button>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  v-if="scope.row.status === '1'"
+                  @click="upDownBnt(scope.row)"
+                >下线</el-button>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  v-if="scope.row.status === '0'"
+                  @click="upDownBnt(scope.row)"
+                >上线</el-button>
               </template>
             </template>
           </el-table-column>
@@ -90,11 +106,20 @@
     <template>
       <el-dialog top="40px" title :visible.sync="dialogFormVisible">
         <span slot="title" class="dialog-title">审核节点</span>
-        <el-table :data="tableData" style="width: 100%" size="small" border>
+        <el-table :data="checkData" style="width: 100%" size="small" border>
           <el-table-column label="审核编号" type="index" width="100"></el-table-column>
-          <el-table-column label="审核结果" prop="name"></el-table-column>
-          <el-table-column label="审核时间" prop="teacherName"></el-table-column>
-          <el-table-column label="审核意见" prop="phone"></el-table-column>
+          <el-table-column label="审核结果">
+            <template slot-scope="scope">
+              <template v-if="scope.row.auditState === 1">
+                <span class="on">通过</span>
+              </template>
+              <template v-if="scope.row.auditState === 2">
+                <span class="in">不通过</span>
+              </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="审核时间" prop="createTime"></el-table-column>
+          <el-table-column label="审核意见" prop="objection"></el-table-column>
         </el-table>
       </el-dialog>
     </template>
@@ -102,6 +127,7 @@
 </template>
 
 <script>
+import service from "@/api";
 import pageMixins from "@/mixins/page";
 export default {
   mixins: [pageMixins],
@@ -117,51 +143,60 @@ export default {
         { value: 0, label: "审核不通过" },
         { value: 1, label: "审核通过" }
       ],
-      tableData: [
-        {
-          name: "tony",
-          teacherName: "刘德海",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 1
-        },
-        {
-          name: "阳光培训击机构",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 2
-        },
-        {
-          name: "tony",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 3
-        }
-      ],
+      tableData: [],
+      checkData: [],
       totalCount: 20,
       dialogFormVisible: false
     };
   },
+  mounted() {
+    this.organList();
+  },
+
+  activated() {
+    this.organList();
+  },
 
   methods: {
+    async organList() {
+      let res = await service.organList();
+      if (res.errorCode === 0) {
+        this.tableData = res.data.list;
+        this.totalCount = res.data.total;
+      }
+    },
     // 查询
     handleCheck() {},
     // 查看
     handleTip(row) {
-      this.$router.push({ path: `/organEntry/details/1` });
+      this.$router.push({
+        path: `/organEntry/details/1`,
+        query: { status: "check" }
+      });
     },
     // 审核
-    handleStage(row) {
-      this.dialogFormVisible = true;
+    async handleStage(row) {
+      let res = await service.checkInst(row.id);
+      if (res.errorCode === 0) {
+        this.dialogFormVisible = true;
+        this.checkData = res.data;
+      }
+    },
+    async upDownBnt(row) {
+      let res = await service.updateUD(row.id);
+
+      if (res.errorCode === 0) {
+        this.organList();
+      } else {
+        this.$message(res.errorMsg);
+      }
     },
     // 审核
-    btnCheck() {
-      this.$router.push({ path: `/organEntry/edit/1` });
+    btnCheck(row) {
+      this.$router.push({
+        path: `/organEntry/details/${row.id}`,
+        query: { status: "check" }
+      });
     }
   }
 };
