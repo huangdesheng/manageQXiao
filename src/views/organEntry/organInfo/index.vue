@@ -53,7 +53,7 @@
                   @click="handleEdit(scope.row)"
                   v-if="scope.row.state !=1"
                 >编辑</el-button>
-                <el-button
+                <!-- <el-button
                   size="mini"
                   type="primary"
                   v-if="scope.row.status === '1'"
@@ -64,7 +64,7 @@
                   type="primary"
                   v-if="scope.row.status === '0'"
                   @click="upDownBnt(scope.row)"
-                >上线</el-button>
+                >上线</el-button>-->
               </template>
             </template>
           </el-table-column>
@@ -163,16 +163,16 @@ export default {
     // 编辑
     handleEdit(row) {
       this.$router.push({ path: `/organEntry/edit/${row.id}` });
-    },
-    async upDownBnt(row) {
-      let res = await service.updateUD(row.id);
-
-      if (res.errorCode === 0) {
-        this.organList();
-      } else {
-        this.$message(res.errorMsg);
-      }
     }
+    // async upDownBnt(row) {
+    //   let res = await service.updateUD(row.id);
+
+    //   if (res.errorCode === 0) {
+    //     this.organList();
+    //   } else {
+    //     this.$message(res.errorMsg);
+    //   }
+    // }
     // handleCurrentChange(curr) {
     //   this.query.page = curr;
     //   this.organList();

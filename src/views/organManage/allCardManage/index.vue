@@ -12,7 +12,7 @@
           label-position="left"
         >
           <el-form-item label="卡券类型">
-            <el-select v-model="query.cardStatus" clearable placeholder="请选择设备状态">
+            <el-select v-model="query.type" clearable placeholder="请选择设备状态">
               <el-option
                 v-for="item in cardList"
                 :key="item.value"
@@ -22,7 +22,7 @@
             </el-select>
           </el-form-item>
           <el-form-item label="有限期">
-            <el-select v-model="query.timeStatus" clearable placeholder="请选择设备状态">
+            <el-select v-model="query.forever" clearable placeholder="请选择设备状态">
               <el-option
                 v-for="item in timeList"
                 :key="item.value"
@@ -45,27 +45,40 @@
       <template>
         <el-table :data="tableData" style="width: 100%" size="small" border>
           <el-table-column label="序号" type="index"></el-table-column>
-          <el-table-column label="机构类型" prop="name"></el-table-column>
-          <el-table-column label="类型" prop="name"></el-table-column>
-          <el-table-column label="活动标题" prop="teacherName"></el-table-column>
-          <el-table-column label="有效期" prop="phone"></el-table-column>
-          <el-table-column label="发布时间" prop="time1"></el-table-column>
-          <el-table-column label="发布数量" prop="status" min-width="40"></el-table-column>
-          <el-table-column label="领券数量" prop="status" min-width="40"></el-table-column>
-          <el-table-column label="核销数量" prop="status" min-width="40">
+          <el-table-column label="机构类型" prop="instTitle"></el-table-column>
+          <el-table-column label="类型" prop="name">
+            <template slot-scope="scope" min-width="30">
+              <span v-if="scope.row.type === 1">优惠券</span>
+              <span v-if="scope.row.type === 2">体验券</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="活动标题" prop="title"></el-table-column>
+          <el-table-column label="有效期">
+            <template slot-scope="scope" min-width="30">
+              <span v-if="scope.row.forever == 1">永久</span>
+              <span v-if="scope.row.type === 2">{{scope.row.startTime}}至{{scope.row.endTime}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column label="发布时间" prop="issueTime"></el-table-column>
+          <el-table-column label="发布数量" prop="issueNumber" min-width="40"></el-table-column>
+          <el-table-column label="领券数量" prop="receiveNumber" min-width="40"></el-table-column>
+          <el-table-column label="核销数量" min-width="40">
             <template slot-scope="scope" min-width="30">
               <template>
-                <span @click="handleStage(scope.row)" class="on">{{scope.row.status}}</span>
+                <span @click="handleStage(scope.row)" class="on">{{scope.row.chargeNumber}}</span>
               </template>
             </template>
           </el-table-column>
           <el-table-column label="状态">
             <template slot-scope="scope" min-width="30">
-              <template v-if="scope.row.status === 1">
+              <template v-if="scope.row.state === 0">
+                <span>未发布</span>
+              </template>
+              <template v-if="scope.row.state === 1">
                 <span>展示中</span>
               </template>
-              <template v-if="scope.row.status === 2">
-                <span>已结束</span>
+              <template v-if="scope.row.state === 2">
+                <span>下架</span>
               </template>
             </template>
           </el-table-column>
@@ -73,7 +86,12 @@
           <el-table-column label="操作" min-width="150">
             <template slot-scope="scope">
               <template>
-                <el-button size="mini" type="primary" @click="handleDown(scope.row)">下架</el-button>
+                <el-button
+                  size="mini"
+                  type="primary"
+                  @click="handleDown(scope.row)"
+                  v-if="scope.row.state == 1"
+                >下架</el-button>
               </template>
             </template>
           </el-table-column>
@@ -100,7 +118,7 @@
     </div>
 
     <!-- 新增或编辑 -->
-    <template>
+    <!-- <template>
       <el-dialog top="40px" title :visible.sync="dialogFormVisible">
         <span slot="title" class="dialog-title">{{word}}</span>
         <el-form
@@ -170,10 +188,10 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-    </template>
+    </template>-->
 
     <!-- 核销 -->
-    <template>
+    <!-- <template>
       <el-dialog top="40px" title :visible.sync="dialogWriteVisible">
         <span slot="title" class="dialog-title">卡券核销</span>
         <el-form
@@ -192,7 +210,7 @@
           </el-form-item>
         </el-form>
       </el-dialog>
-    </template>
+    </template>-->
 
     <!-- 优惠券预览 -->
     <template>
@@ -224,6 +242,7 @@
 </template>
 
 <script>
+import service from "@/api";
 import pageMixins from "@/mixins/page";
 export default {
   mixins: [pageMixins],
@@ -231,41 +250,24 @@ export default {
     return {
       query: {
         title: "",
-        cardStatus: 0,
-        timeStatus: 0,
-        code: ""
+        type: "",
+        code: "",
+        forever: ""
       },
-      cardList: [{ value: 0, label: "优惠券" }, { value: 1, label: "体验券" }],
-      timeList: [{ value: 0, label: "永久" }, { value: 1, label: "自定义" }],
-      tableData: [
-        {
-          name: "tony",
-          teacherName: "刘德海",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 1
-        },
-        {
-          name: "阳光培训击机构",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 2
-        },
-        {
-          name: "tony",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 3
-        }
+      cardList: [
+        { value: "", label: "全部" },
+        { value: 1, label: "优惠券" },
+        { value: 2, label: "体验券" }
       ],
-      totalCount: 20,
+      timeList: [
+        { value: "", label: "全部" },
+        { value: 1, label: "永久" },
+        { value: 0, label: "自定义" }
+      ],
+      tableData: [],
+      totalCount: "",
       // 卡券新增
-      dialogFormVisible: false,
+      // dialogFormVisible: false,
       addQuery: {
         cardStatus: 0,
         title: "",
@@ -276,83 +278,100 @@ export default {
         price: 0,
         num: 0
       },
-      cardTypeList: [
-        { value: 0, label: "优惠券" },
-        { value: 1, label: "体验券" }
-      ],
-      addQueryList: [
-        { value: 0, label: "永久" },
-        { value: 1, label: "自定义" }
-      ],
-      rules: {
-        cardTypeStatus: [
-          { required: true, message: "请选择卡券类型", trigger: "change" }
-        ],
-        title: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
-        desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }],
-        cardStatus: [
-          { required: true, message: "请选择活动时间", trigger: "change" }
-        ],
-        price: [
-          { required: true, message: "请输入优惠金额", trigger: "blur" },
-          { type: "number", message: "优惠金额为数字值" }
-        ],
-        num: [
-          { required: true, message: "请输入发行数量", trigger: "blur" },
-          { type: "number", message: "发行数量为数字值" }
-        ]
-      },
-      word: "新增卡券",
-
       // 核销
       write: {
         code: ""
       },
-      dialogWriteVisible: false,
+      // dialogWriteVisible: false,
 
       // 优惠券预览
       dialogPrwViewVisible: false
     };
   },
+  mounted() {
+    this.couponList();
+  },
+  activated() {
+    this.couponList();
+  },
 
   methods: {
+    async couponList() {
+      let res = await service.couponList(this.query, {
+        headers: { "Content-Type": "application/json" }
+      });
+      if (res.errorCode === 0) {
+        this.tableData = res.data.list;
+        this.totalCount = res.data.total;
+      } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
+        this.tableData = [];
+        this.totalCount = "";
+      } else {
+        this.$message(res.errorMsg);
+      }
+    },
+    handleCheck() {
+      this.couponList();
+    },
+
+    handleCurrentChange(curr) {
+      this.query.page = curr;
+      this.couponList();
+    },
+    handleSizeChange(size) {
+      this.query.pageSize = size;
+      this.couponList();
+    },
+    handleSearch() {
+      this.couponList();
+    },
     // 查询
-    handleStage() {
+    handleStage(row) {
       this.$router.push({
-        path: "/organManage/verificationDetails/1"
+        path: `/organManage/verificationDetails/${row.id}`
       });
     },
     // 确认核销
-    btnWrite() {
-      console.log("确认核销");
-    },
+    // btnWrite() {
+    //   console.log("确认核销");
+    // },
     // 下架
-    handleDown() {
-      console.log("下架");
-    },
-
-    handleCheck() {
-      console.log("查询");
-    },
-
-    handleSizeChange() {
-      console.log("上一页");
-    },
-
-    handleCurrentChange() {
-      console.log("下一页");
-    },
-    onSubmit(addQuery) {
-      this.$refs[addQuery].validate(valid => {
-        console.log(valid);
-        if (valid) {
-          alert("submit!");
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
+    async handleDown(row) {
+      let res = await service.couponDown(row.id, {
+        headers: { "Content-Type": "application/json" }
       });
+      if (res.errorCode === 0) {
+        this.couponList();
+      } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
+      } else {
+        this.$message(res.errorMsg);
+      }
     }
+
+    // handleCheck() {
+    //   console.log("查询");
+    // },
+
+    // handleSizeChange() {
+    //   console.log("上一页");
+    // },
+
+    // handleCurrentChange() {
+    //   console.log("下一页");
+    // },
+    // onSubmit(addQuery) {
+    //   this.$refs[addQuery].validate(valid => {
+    //     console.log(valid);
+    //     if (valid) {
+    //       alert("submit!");
+    //     } else {
+    //       console.log("error submit!!");
+    //       return false;
+    //     }
+    //   });
+    // }
   }
 };
 </script>
@@ -383,7 +402,7 @@ export default {
   justify-content: center;
   color: #fff;
   > div {
-    width: 500px;
+    width: 640px;
     height: 230px;
     background: linear-gradient(
       150deg,

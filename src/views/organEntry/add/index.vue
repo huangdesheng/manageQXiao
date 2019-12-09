@@ -86,7 +86,7 @@
               </li>
             </div>
 
-            <div class="add" v-if="form.envImages.length<3">
+            <div class="add" v-if="form.envImages.length<9">
               <input @change="fileChange($event,3)" type="file" id="upload_file" multiple />
               <div>
                 <i class="el-icon-plus"></i>

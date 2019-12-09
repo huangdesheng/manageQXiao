@@ -175,8 +175,7 @@ export default {
     // 查看
     handleTip(row) {
       this.$router.push({
-        path: `/organEntry/details/${row.id}`,
-        query: { status: "check" }
+        path: `/organEntry/details/${row.id}`
       });
     },
     // 审核
@@ -189,7 +188,6 @@ export default {
     },
     async upDownBnt(row) {
       let res = await service.updateUD(row.id);
-
       if (res.errorCode === 0) {
         this.organList();
       } else {
@@ -202,6 +200,17 @@ export default {
         path: `/organEntry/details/${row.id}`,
         query: { status: "check" }
       });
+    },
+    handleCurrentChange(curr) {
+      this.query.page = curr;
+      this.couponList();
+    },
+    handleSizeChange(size) {
+      this.query.pageSize = size;
+      this.couponList();
+    },
+    handleSearch() {
+      this.couponList();
     }
   }
 };

@@ -19,6 +19,7 @@ import * as teacher from './module/teacher';
 import * as CardManagement from './module/CardManagement';
 import * as control from './module/control';
 import * as organEntry from './module/organEntry';
+import * as cardManage from './module/cardManage';
 export default {
   ...device,
   ...content,
@@ -40,5 +41,6 @@ export default {
   ...teacher,
   ...CardManagement,
   ...control,
-  ...organEntry
+  ...organEntry,
+  ...cardManage
 }
