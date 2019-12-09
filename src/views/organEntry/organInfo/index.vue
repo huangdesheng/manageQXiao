@@ -11,7 +11,7 @@
           label-width="70px"
           label-position="left"
         >
-          <el-form-item>
+          <el-form-item v-if="tableData.length<1">
             <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button>
           </el-form-item>
         </el-form>
@@ -72,8 +72,7 @@
       </template>
     </div>
 
-    <div class="page-ft">
-      <!-- 分页 -->
+    <!-- <div class="page-ft">
       <template>
         <div class="qx-pagination" v-if="totalCount">
           <el-pagination
@@ -88,7 +87,7 @@
           ></el-pagination>
         </div>
       </template>
-    </div>
+    </div>-->
 
     <template>
       <el-dialog top="40px" title :visible.sync="dialogFormVisible">
@@ -173,18 +172,18 @@ export default {
       } else {
         this.$message(res.errorMsg);
       }
-    },
-    handleCurrentChange(curr) {
-      this.query.page = curr;
-      this.organList();
-    },
-    handleSizeChange(size) {
-      this.query.pageSize = size;
-      this.organList();
-    },
-    handleSearch() {
-      this.organList();
     }
+    // handleCurrentChange(curr) {
+    //   this.query.page = curr;
+    //   this.organList();
+    // },
+    // handleSizeChange(size) {
+    //   this.query.pageSize = size;
+    //   this.organList();
+    // },
+    // handleSearch() {
+    //   this.organList();
+    // }
   }
 };
 </script>

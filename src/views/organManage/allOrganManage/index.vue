@@ -11,8 +11,8 @@
           label-width="70px"
           label-position="left"
         >
-          <el-form-item label="卡券类型">
-            <el-select v-model="query.checkStatus" clearable placeholder="请选择设备状态">
+          <el-form-item label="审核状态">
+            <el-select v-model="query.state" clearable placeholder="请选择设备状态">
               <el-option
                 v-for="item in checkList"
                 :key="item.value"
@@ -134,13 +134,13 @@ export default {
   data() {
     return {
       query: {
-        checkStatus: 0,
-        name: ""
+        state: -1,
+        title: ""
       },
       checkList: [
-        { value: 0, label: "全部" },
-        { value: 1, label: "审核中" },
-        { value: 0, label: "审核不通过" },
+        { value: -1, label: "全部" },
+        { value: 0, label: "审核中" },
+        { value: 2, label: "审核不通过" },
         { value: 1, label: "审核通过" }
       ],
       tableData: [],
@@ -159,18 +159,23 @@ export default {
 
   methods: {
     async organList() {
-      let res = await service.organList();
+      let res = await service.organList(this.query);
       if (res.errorCode === 0) {
         this.tableData = res.data.list;
         this.totalCount = res.data.total;
+      } else {
+        this.tableData = [];
+        this.totalCount = "";
       }
     },
     // 查询
-    handleCheck() {},
+    handleCheck() {
+      this.organList();
+    },
     // 查看
     handleTip(row) {
       this.$router.push({
-        path: `/organEntry/details/1`,
+        path: `/organEntry/details/${row.id}`,
         query: { status: "check" }
       });
     },
