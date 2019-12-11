@@ -12,7 +12,7 @@
           label-position="left"
         >
           <el-form-item label="业务类型">
-            <el-select v-model="query.cardStatus" clearable placeholder="请选择业务类型">
+            <el-select v-model="query.type" clearable placeholder="请选择业务类型">
               <el-option
                 v-for="item in cardList"
                 :key="item.value"
@@ -23,11 +23,11 @@
           </el-form-item>
 
           <el-form-item label="用户名称">
-            <el-input v-model="query.name" placeholder="请输入用户名称" maxlength="10"></el-input>
+            <el-input v-model="query.username" placeholder="请输入用户名称" maxlength="10"></el-input>
           </el-form-item>
           <el-form-item label="时间段">
             <el-date-picker
-              v-model="query.startTime"
+              v-model="query.startArr"
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
@@ -46,12 +46,21 @@
       <template>
         <el-table :data="tableData" style="width: 100%" size="small" border>
           <el-table-column label="序号" type="index"></el-table-column>
-          <el-table-column label="用户名称" prop="name"></el-table-column>
-          <el-table-column label="业务类型" prop="teacherName"></el-table-column>
-          <el-table-column label="流水号" prop="phone"></el-table-column>
-          <el-table-column label="发生时间" prop="time1"></el-table-column>
-          <el-table-column label="收支积分" prop="time2"></el-table-column>
-          <el-table-column label="积分结余" prop="time2"></el-table-column>
+          <el-table-column label="用户名称" prop="username"></el-table-column>
+          <el-table-column label="业务类型">
+            <template slot-scope="scope" min-width="30">
+              <template v-if="scope.row.type === 1">
+                <span>优惠券核销</span>
+              </template>
+              <template v-if="scope.row.type === 2">
+                <span>体验券核销</span>
+              </template>
+            </template>
+          </el-table-column>
+          <el-table-column label="流水号" prop="orderNumber"></el-table-column>
+          <el-table-column label="发生时间" prop="tradeTime"></el-table-column>
+          <el-table-column label="收支积分" prop="amount"></el-table-column>
+          <el-table-column label="积分结余" prop="balance"></el-table-column>
         </el-table>
       </template>
     </div>
@@ -77,70 +86,79 @@
 </template>
 
 <script>
+import service from "@/api";
 import pageMixins from "@/mixins/page";
 export default {
   mixins: [pageMixins],
   data() {
     return {
       query: {
-        cardStatus: 0,
-        startTime: [],
+        type: 0,
+        startArr: [],
+        startTime: "",
         endTime: "",
-        name: ""
+        username: ""
       },
       cardList: [
-        // { value: 0, label: "全部" },
-        // { value: 1, label: "在线充值" },
         {
           value: 0,
-          label: "优惠券核销"
+          label: "全部"
         },
         {
           value: 1,
+          label: "优惠券核销"
+        },
+        {
+          value: 2,
           label: "体验券核销"
         }
-        // {
-        //   value: 4,
-        //   label: "在线冠名"
-        // }
       ],
 
-      tableData: [
-        {
-          name: "tony",
-          teacherName: "刘德海",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 1
-        },
-        {
-          name: "阳光培训击机构",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 2
-        },
-        {
-          name: "tony",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 3
-        }
-      ],
-      totalCount: 20
+      tableData: [],
+      totalCount: ""
     };
   },
-
+  mounted() {
+    this.creditList();
+  },
   methods: {
-    handleCheck() {
-      console.log("handleCheck");
+    async creditList() {
+      if (this.query.startArr.length === 0) {
+        this.query.startTime = "";
+        this.query.endTime = "";
+      } else {
+        this.query.startTime = this.query.startArr[0];
+        this.query.endTime = this.query.startArr[1];
+      }
+      let res = await service.creditList(this.query, {
+        headers: { "Content-Type": "application/json" }
+      });
+
+      if (res.errorCode === 0) {
+        this.tableData = res.data.list;
+        this.totalCount = res.data.total;
+      } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
+        this.tableData = [];
+        this.totalCount = "";
+      } else {
+        this.$message(res.errorMsg);
+      }
     },
-    handleSizeChange() {},
-    handleCurrentChange() {}
+    handleCheck() {
+      this.creditList();
+    },
+    handleCurrentChange(curr) {
+      this.query.page = curr;
+      this.creditList();
+    },
+    handleSizeChange(size) {
+      this.query.pageSize = size;
+      this.creditList();
+    },
+    handleSearch() {
+      this.creditList();
+    }
   }
 };
 </script>

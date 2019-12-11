@@ -25,7 +25,9 @@
         <el-form-item label="机构地址" prop="address">
           <el-input v-model="form.address" :disabled="true"></el-input>
         </el-form-item>
-
+        <el-form-item label="详细地址" prop="streetAddress" :disabled="true">
+          <el-input v-model="form.streetAddress"></el-input>
+        </el-form-item>
         <el-form-item label="课程介绍" prop="courseIntroduction">
           <el-input type="textarea" v-model="form.courseIntroduction" :rows="6" :disabled="true"></el-input>
           <div class="upload">
@@ -89,48 +91,12 @@ export default {
   data() {
     return {
       form: {
-        // title: "",
-        // linkMan: "",
-        // tele: "",
-        // address: "",
         instTypes: []
-        // courseIntroduction: "",
-        // introduction: "",
-        // environment: "",
-        // courseImages: [],
-        // introImages: [],
-        // envImages: []
       },
       organTypes: [],
       objection: "",
       state: "1",
       status: ""
-      // rules: {
-      //   title: [{ required: true, message: "请输入活动名称", trigger: "blur" }],
-
-      //   instTypes: [
-      //     {
-      //       type: "array",
-      //       required: true,
-      //       message: "请至少选择一个机构标签",
-      //       trigger: "change"
-      //     }
-      //   ],
-      //   linkMan: [
-      //     { required: true, message: "请输入联系老师", trigger: "blur" }
-      //   ],
-      //   tele: [{ required: true, message: "联系方式不能为空" }],
-      //   address: [
-      //     { required: true, message: "请输入机构地址", trigger: "blur" }
-      //   ],
-
-      //   courseIntroduction: [
-      //     { required: true, message: "请填写课程介绍", trigger: "blur" }
-      //   ],
-      //   introduction: [
-      //     { required: true, message: "请填写机构简介", trigger: "blur" }
-      //   ]
-      // }
     };
   },
   mounted() {
@@ -141,7 +107,6 @@ export default {
   methods: {
     async organDetails(params) {
       let res = await service.organDetails(params);
-      console.log(res);
       if (res.errorCode === 0) {
         this.form = res.data;
       }
@@ -226,7 +191,7 @@ export default {
       left: 0;
       top: 0;
       .img  {
-        width: 100%; //         width: 100%;
+        width: 100%;
         height: 100%;
         background-repeat: no-repeat;
         background-position: center center;

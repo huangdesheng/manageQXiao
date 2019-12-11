@@ -39,32 +39,7 @@ export default {
   mixins: [pageMixins],
   data() {
     return {
-      tableData: [
-        {
-          name: "tony",
-          teacherName: "刘德海",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 1
-        },
-        {
-          name: "阳光培训击机构",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 2
-        },
-        {
-          name: "tony",
-          teacherName: "黄德生",
-          phone: "13411062173",
-          time1: "2019-11-03",
-          time2: "2019-12-03",
-          status: 3
-        }
-      ],
+      tableData: [],
       query: {
         instId: this.$route.params.id
       },

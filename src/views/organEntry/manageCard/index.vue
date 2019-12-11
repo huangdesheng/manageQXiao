@@ -91,12 +91,8 @@
               <template v-if="scope.row.state === 0">
                 <el-button size="mini" type="primary" @click="handleDown(scope.row)">发布</el-button>
                 <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-                <!-- <el-button size="mini" type="primary" @click="handleDown(scope.row)">下架</el-button>
-                <el-button size="mini" type="primary" @click="handleWrite(scope.row)">核销</el-button>-->
               </template>
               <template v-if="scope.row.state === 1">
-                <!-- <el-button size="mini" type="primary" @click="handleSend(scope.row)">发布</el-button>
-                <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>-->
                 <el-button size="mini" type="primary" @click="handleDown(scope.row)">下架</el-button>
                 <el-button size="mini" type="primary" @click="handleWrite(scope.row)">核销</el-button>
               </template>
@@ -355,10 +351,7 @@ export default {
         this.$message(res.errorMsg);
       }
     },
-    // // 查询
-    // handleStage() {
-    //   console.log("查询");
-    // },
+
     // 新增
     handleAdd() {
       this.dialogFormVisible = true;
@@ -430,7 +423,6 @@ export default {
       if (res.errorCode === 0) {
         this.params = res.data;
         this.dialogPrwViewVisible = true;
-        // this.params = res.data;
       } else if (res.errorCode === -1) {
       } else if (res.errorCode === 404) {
       } else {
@@ -476,11 +468,7 @@ export default {
             this.addQuery.startTime = "";
             this.addQuery.endTime = "";
           }
-          // console.log(this.addQuery);
           this.addCoupon(this.addQuery);
-        } else {
-          console.log("error submit!!");
-          return false;
         }
       });
     },
@@ -496,17 +484,11 @@ export default {
           headers: { "Content-Type": "application/json" }
         });
       }
-      // return false;
-      // let res = await service.addCoupon(addQuery, {
-      //   headers: { "Content-Type": "application/json" }
-      // });
-      // let res = await service.updateCoupon(addQuery, {
-      //   headers: { "Content-Type": "application/json" }
-      // });
       if (res.errorCode === 0) {
         this.dialogFormVisible = false;
         this.couponList();
       } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
       } else {
         this.$message(res.errorMsg);
       }

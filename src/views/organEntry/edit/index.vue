@@ -22,7 +22,30 @@
           <el-input v-model="form.tele"></el-input>
         </el-form-item>
         <el-form-item label="机构地址" prop="address">
-          <el-input v-model="form.address"></el-input>
+          <el-input v-model="form.address" :disabled="true"></el-input>
+          <div class="hello" style="width:450px;height:200px;margin-top:15px">
+            <el-amap-search-box
+              class="search-box"
+              :search-option="searchOption"
+              :on-search-result="onSearchResult"
+            ></el-amap-search-box>
+            <el-amap
+              ref="map"
+              vid="amapDemo"
+              :amap-manager="amapManager"
+              :center="center"
+              :zoom="zoom"
+              :plugin="plugin"
+              :events="events"
+              class="amap-demo"
+            >
+              <el-amap-marker vid="amapDemo" :position="center"></el-amap-marker>
+            </el-amap>
+          </div>
+        </el-form-item>
+
+        <el-form-item label="详细地址" prop="streetAddress" style="margin-top:65px">
+          <el-input v-model="form.streetAddress"></el-input>
         </el-form-item>
 
         <el-form-item label="课程介绍" prop="courseIntroduction">
@@ -105,6 +128,12 @@
 
 <script>
 import service from "@/api";
+import VueAMap from "vue-amap";
+let amapManager = new VueAMap.AMapManager();
+VueAMap.initAMapApiLoader({
+  key: "962128c46f91fc0e04bd891a54b59b38",
+  plugin: ["Geocoder"]
+});
 export default {
   data() {
     return {
@@ -113,6 +142,9 @@ export default {
         linkMan: "",
         tele: "",
         address: "",
+        streetAddress: "",
+        latitudes: "",
+        longitude: "",
         instTypes: [],
         courseIntroduction: "",
         introduction: "",
@@ -138,16 +170,70 @@ export default {
         ],
         tele: [{ required: true, message: "联系方式不能为空" }],
         address: [
-          { required: true, message: "请输入机构地址", trigger: "blur" }
+          { required: true, message: "请根据地图获取地址", trigger: "blur" }
         ],
-
+        streetAddress: [
+          { required: true, message: "请输入详细地址", trigger: "blur" }
+        ],
         courseIntroduction: [
           { required: true, message: "请填写课程介绍", trigger: "blur" }
         ],
         introduction: [
           { required: true, message: "请填写机构简介", trigger: "blur" }
         ]
-      }
+      },
+      amapManager,
+      zoom: 12,
+      center: [113.270279, 23.136931],
+      searchOption: {
+        city: "广州",
+        citylimit: true
+      },
+      markers: [],
+      address: "",
+      lng: 0,
+      lat: 0,
+      events: {
+        init: o => {
+          o.getCity(result => {
+            console.log(result);
+          });
+        },
+        moveend: () => {},
+        zoomchange: () => {},
+        click(e) {
+          let { lng, lat } = e.lnglat;
+          // 这里通过高德 SDK 完成。
+          let geocoder = new AMap.Geocoder({
+            radius: 500,
+            extensions: "all"
+          });
+          geocoder.getAddress([lng, lat], function(status, result) {
+            if (status === "complete" && result.info === "OK") {
+              if (result && result.regeocode) {
+                self.form.address = result.regeocode.formattedAddress;
+                self.form.streetAddress = result.regeocode.formattedAddress;
+                self.form.longitude = lng;
+                self.form.latitudes = lat;
+                self.address = result.regeocode.formattedAddress;
+                self.$nextTick();
+              }
+            }
+          });
+        }
+      },
+      plugin: [
+        "ToolBar",
+        {
+          pName: "MapType",
+          defaultType: 0,
+          events: {
+            init(o) {
+              console.log(o);
+            }
+          }
+        }
+      ]
     };
   },
   mounted() {
@@ -212,14 +298,7 @@ export default {
         }
       };
       let res = await service.filesUpload(formData, config);
-      console.log(res);
-      // let res = await service.moreUploadTwo(formData, config);
       if (res.errorCode === 0) {
-        //   document.getElementById("upload_file").value = "";
-        //   let imgs = [];
-        //   res.data.forEach(element => {
-        //     imgs.push(element.photoUrl);
-        //   });
         let imgs = [];
         res.data.forEach(element => {
           imgs.push(element.url);
@@ -250,7 +329,6 @@ export default {
     },
 
     async updateInst() {
-      // this.form = Object.assign(this.form, { id: this.$route.params.id });
       let res = await service.updateInst(this.form, {
         headers: { "Content-Type": "application/json" }
       });
@@ -282,6 +360,40 @@ export default {
             elem => elem !== url
           );
         }
+      }
+    },
+    onSearchResult(pois) {
+      let self = this;
+      let latSum = 0;
+      let lngSum = 0;
+      if (pois.length > 0) {
+        pois.forEach(poi => {
+          let { lng, lat } = poi;
+          lngSum += lng;
+          latSum += lat;
+          self.markers.push([poi.lng, poi.lat]);
+        });
+        let center = {
+          lng: lngSum / pois.length,
+          lat: latSum / pois.length
+        };
+        self.center = [center.lng, center.lat];
+        let geocoder = new AMap.Geocoder({
+          radius: 500,
+          extensions: "all"
+        });
+        geocoder.getAddress(this.center, function(status, result) {
+          if (status === "complete" && result.info === "OK") {
+            if (result && result.regeocode) {
+              self.form.address = result.regeocode.formattedAddress;
+              self.form.streetAddress = result.regeocode.formattedAddress;
+              self.form.longitude = center.lng;
+              self.form.latitudes = center.lat;
+              self.address = result.regeocode.formattedAddress;
+              self.$nextTick();
+            }
+          }
+        });
       }
     }
   }

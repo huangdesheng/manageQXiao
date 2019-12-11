@@ -9,15 +9,15 @@
         <div class="hd-content">
           <div>
             <p>充值总额(元)</p>
-            <h2>8000</h2>
+            <h2>{{money.totalTopUp}}</h2>
           </div>
           <div>
             <p>已使用金额(元)</p>
-            <h2>8000</h2>
+            <h2>{{money.spendAmount}}</h2>
           </div>
           <div>
             <p>账户金额(元)</p>
-            <h2>8000</h2>
+            <h2>{{money.balance}}</h2>
           </div>
         </div>
       </div>
@@ -33,7 +33,7 @@
           <div>
             <el-form ref="form" :model="form" label-width="120px">
               <el-form-item label="充值金额 (元)" class="first">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.value" type="number" placeholder="请输入充值金额"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" class="btn" @click="onSubmit">充值</el-button>
@@ -50,18 +50,55 @@
 </template>
 
 <script>
+import service from "@/api";
 export default {
   data() {
     return {
-      value: "",
-      img:
-        "http://192.168.18.253:8081/upload/2018-12-08/content/bcede52f-617d-4a86-839b-32431de1fc62.JPG",
+      img: "",
       form: {
-        name: "",
-        img:
-          "http://192.168.18.253:8081/upload/2018-12-08/content/bcede52f-617d-4a86-839b-32431de1fc62.JPG"
+        value: ""
+      },
+      money: {
+        balance: 0.0,
+        spendAmount: 0.0,
+        totalTopUp: 0.0
       }
     };
+  },
+  mounted() {
+    this.organMoney();
+  },
+  methods: {
+    async organMoney() {
+      let res = await service.organMoney();
+      console.log(res);
+      if (res.errorCode === 0) {
+        this.money = res.data;
+        console.log(res);
+      } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
+      } else {
+        this.$message(res.errorMsg);
+      }
+    },
+    async onSubmit() {
+      if (this.form.value <= 0) {
+        this.$message("金额必须大于0");
+        return false;
+      }
+      let res = await service.payMoney(
+        { amount: this.form.value },
+        {
+          headers: { "Content-Type": "application/json" }
+        }
+      );
+      if (res.errorCode === 0) {
+        this.img = res.data.url;
+      } else {
+        this.img = "";
+        this.$message(res.errorMsg);
+      }
+    }
   }
 };
 </script>

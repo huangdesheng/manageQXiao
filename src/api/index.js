@@ -20,6 +20,8 @@ import * as CardManagement from './module/CardManagement';
 import * as control from './module/control';
 import * as organEntry from './module/organEntry';
 import * as cardManage from './module/cardManage';
+import * as moneyManage from './module/moneyManage';
+import * as integraManage from './module/integraManage';
 export default {
   ...device,
   ...content,
@@ -42,5 +44,7 @@ export default {
   ...CardManagement,
   ...control,
   ...organEntry,
-  ...cardManage
+  ...cardManage,
+  ...moneyManage,
+  ...integraManage
 }

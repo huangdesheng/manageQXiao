@@ -116,128 +116,6 @@
         </div>
       </template>
     </div>
-
-    <!-- 新增或编辑 -->
-    <!-- <template>
-      <el-dialog top="40px" title :visible.sync="dialogFormVisible">
-        <span slot="title" class="dialog-title">{{word}}</span>
-        <el-form
-          :model="addQuery"
-          size="small"
-          label-width="120px"
-          label-position="left"
-          :rules="rules"
-          ref="addQuery"
-          class="form_class"
-        >
-          <el-form-item label="卡券类型" prop="cardTypeStatus">
-            <el-select v-model="addQuery.cardTypeStatus" clearable placeholder="请选择设备状态">
-              <el-option
-                v-for="item in cardTypeList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item label="卡券标题" prop="title">
-            <el-input v-model="addQuery.title" placeholder="请输入卡券标题" maxlength="10"></el-input>
-          </el-form-item>
-          <el-form-item label="卡券内容" prop="desc">
-            <el-input type="textarea" v-model="addQuery.desc" :rows="6" placeholder="请输入卡券内容"></el-input>
-          </el-form-item>
-
-          <el-form-item label="活动时间" prop="cardStatus">
-            <el-select
-              v-model="addQuery.cardStatus"
-              clearable
-              placeholder="请选择卡券类型"
-              style="margin-right:30px;"
-            >
-              <el-option
-                v-for="item in addQueryList"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              ></el-option>
-            </el-select>
-            <el-date-picker
-              v-model="addQuery.startTime"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy-MM-dd"
-              v-if="addQuery.cardStatus==1"
-            ></el-date-picker>
-          </el-form-item>
-
-          <el-form-item label="优惠面额(元)" prop="price" v-if="addQuery.cardTypeStatus==0">
-            <el-input v-model="addQuery.price" placeholder="请输入优惠面额" maxlength="10"></el-input>
-          </el-form-item>
-          <el-form-item label="体验面额(元)" prop="price" v-if="addQuery.cardTypeStatus==1">
-            <el-input v-model="addQuery.price" placeholder="请输入优惠面额" maxlength="10"></el-input>
-          </el-form-item>
-          <el-form-item label="发行数量(张)" prop="num">
-            <el-input v-model="addQuery.num" placeholder="请输入优惠面额" maxlength="10"></el-input>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button @click="dialogFormVisible = false">取消</el-button>
-            <el-button type="primary" @click="onSubmit('addQuery')">保存</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-    </template>-->
-
-    <!-- 核销 -->
-    <!-- <template>
-      <el-dialog top="40px" title :visible.sync="dialogWriteVisible">
-        <span slot="title" class="dialog-title">卡券核销</span>
-        <el-form
-          :model="write"
-          size="small"
-          label-width="80px"
-          label-position="left"
-          class="form_class"
-        >
-          <el-form-item label="卡券标题" prop="title">
-            <el-input v-model="write.code" placeholder="请输入卡券标题" maxlength="10"></el-input>
-          </el-form-item>
-
-          <el-form-item>
-            <el-button type="primary" @click="btnWrite">确认核销</el-button>
-          </el-form-item>
-        </el-form>
-      </el-dialog>
-    </template>-->
-
-    <!-- 优惠券预览 -->
-    <template>
-      <el-dialog top="40px" title :visible.sync="dialogPrwViewVisible">
-        <span slot="title" class="dialog-title">优惠券预览</span>
-        <div class="cardAdvan">
-          <div>
-            <div class="left">
-              <p>优惠券</p>
-            </div>
-            <div class="right">
-              <div class="r-t">
-                <div>
-                  <span>优惠</span>
-                  <span>500</span>
-                </div>
-                <div>
-                  <p>庆祝德生三周年</p>
-                  <p>时间：2019.10.20-2019.12.30</p>
-                </div>
-              </div>
-              <p class="r-b">涌现出很多教育教学方式。课程改革的核心理念之一就是在教学中渗透情感态度与涌现出很多教育教学方式。课程改革的核心理念之一就是在教学中渗</p>
-            </div>
-          </div>
-        </div>
-      </el-dialog>
-    </template>
   </div>
 </template>
 
@@ -265,27 +143,7 @@ export default {
         { value: 0, label: "自定义" }
       ],
       tableData: [],
-      totalCount: "",
-      // 卡券新增
-      // dialogFormVisible: false,
-      addQuery: {
-        cardStatus: 0,
-        title: "",
-        desc: "",
-        cardTypeStatus: 0,
-        startTime: [],
-        endTime: "",
-        price: 0,
-        num: 0
-      },
-      // 核销
-      write: {
-        code: ""
-      },
-      // dialogWriteVisible: false,
-
-      // 优惠券预览
-      dialogPrwViewVisible: false
+      totalCount: ""
     };
   },
   mounted() {
@@ -332,10 +190,6 @@ export default {
         path: `/organManage/verificationDetails/${row.id}`
       });
     },
-    // 确认核销
-    // btnWrite() {
-    //   console.log("确认核销");
-    // },
     // 下架
     async handleDown(row) {
       let res = await service.couponDown(row.id, {
@@ -349,29 +203,6 @@ export default {
         this.$message(res.errorMsg);
       }
     }
-
-    // handleCheck() {
-    //   console.log("查询");
-    // },
-
-    // handleSizeChange() {
-    //   console.log("上一页");
-    // },
-
-    // handleCurrentChange() {
-    //   console.log("下一页");
-    // },
-    // onSubmit(addQuery) {
-    //   this.$refs[addQuery].validate(valid => {
-    //     console.log(valid);
-    //     if (valid) {
-    //       alert("submit!");
-    //     } else {
-    //       console.log("error submit!!");
-    //       return false;
-    //     }
-    //   });
-    // }
   }
 };
 </script>

@@ -9,15 +9,15 @@
         <div class="hd-content">
           <div>
             <p>平台累计总积分(元)</p>
-            <h2>8000</h2>
+            <h2>{{params.totalCredit}}</h2>
           </div>
           <div>
             <p>未使用积分(元)</p>
-            <h2>8000</h2>
+            <h2>{{params.unusedCredit}}</h2>
           </div>
           <div>
             <p>已使用积分(元)</p>
-            <h2>8000</h2>
+            <h2>{{params.usedCredit}}</h2>
           </div>
         </div>
       </div>
@@ -26,7 +26,34 @@
 </template>
 
 <script>
-export default {};
+import service from "@/api";
+export default {
+  data() {
+    return {
+      params: {
+        totalCredit: 0,
+        unusedCredit: 0,
+        usedCredit: 0
+      }
+    };
+  },
+  mounted() {
+    this.creditManage();
+  },
+
+  methods: {
+    async creditManage() {
+      let res = await service.creditManage();
+      if (res.errorCode === 0) {
+        this.params = res.data;
+      } else if (res.errorCode === -1) {
+      } else if (res.errorCode === 404) {
+      } else {
+        this.$message(res.errorMsg);
+      }
+    }
+  }
+};
 </script>
 
 <style lang="less" scoped>

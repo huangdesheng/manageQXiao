@@ -53,42 +53,13 @@
                   @click="handleEdit(scope.row)"
                   v-if="scope.row.state !=1"
                 >编辑</el-button>
-                <!-- <el-button
-                  size="mini"
-                  type="primary"
-                  v-if="scope.row.status === '1'"
-                  @click="upDownBnt(scope.row)"
-                >下线</el-button>
-                <el-button
-                  size="mini"
-                  type="primary"
-                  v-if="scope.row.status === '0'"
-                  @click="upDownBnt(scope.row)"
-                >上线</el-button>-->
               </template>
             </template>
           </el-table-column>
         </el-table>
       </template>
     </div>
-
-    <!-- <div class="page-ft">
-      <template>
-        <div class="qx-pagination" v-if="totalCount">
-          <el-pagination
-            background
-            small
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            :current-page="query.page"
-            :page-size="query.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="totalCount"
-          ></el-pagination>
-        </div>
-      </template>
-    </div>-->
-
+    <!-- 审核节点 -->
     <template>
       <el-dialog top="40px" title :visible.sync="dialogFormVisible">
         <span slot="title" class="dialog-title">审核节点</span>
@@ -135,14 +106,15 @@ export default {
   },
 
   methods: {
+    // 列表
     async organList() {
-      console.log(this.query);
       let res = await service.organList();
       if (res.errorCode === 0) {
         this.tableData = res.data.list;
         this.totalCount = res.data.total;
       }
     },
+    // 添加
     handleAdd() {
       this.$router.push({
         path: "/organEntry/add"
@@ -164,26 +136,6 @@ export default {
     handleEdit(row) {
       this.$router.push({ path: `/organEntry/edit/${row.id}` });
     }
-    // async upDownBnt(row) {
-    //   let res = await service.updateUD(row.id);
-
-    //   if (res.errorCode === 0) {
-    //     this.organList();
-    //   } else {
-    //     this.$message(res.errorMsg);
-    //   }
-    // }
-    // handleCurrentChange(curr) {
-    //   this.query.page = curr;
-    //   this.organList();
-    // },
-    // handleSizeChange(size) {
-    //   this.query.pageSize = size;
-    //   this.organList();
-    // },
-    // handleSearch() {
-    //   this.organList();
-    // }
   }
 };
 </script>
