@@ -338,6 +338,10 @@ export default {
         this.dialogFormVisible = false;
         this.$refs.form.resetFields();
         this.queryTeachers(this.query);
+      } else {
+        this.$message({
+          message: res.errorMsg
+        });
       }
     },
     //删除老师信息（微信端）

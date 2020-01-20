@@ -65,7 +65,7 @@
           <el-table-column label="有效期" prop="phone">
             <template slot-scope="scope" min-width="30">
               <span v-if="scope.row.forever == 1">永久</span>
-              <span v-if="scope.row.type === 2">{{scope.row.startTime}}至{{scope.row.endTime}}</span>
+              <span v-if="scope.row.forever === 0">{{scope.row.startTime}}至{{scope.row.endTime}}</span>
             </template>
           </el-table-column>
           <el-table-column label="发布时间" prop="issueTime"></el-table-column>
@@ -144,10 +144,16 @@
             </el-select>
           </el-form-item>
           <el-form-item label="卡券标题" prop="title">
-            <el-input v-model="addQuery.title" placeholder="请输入卡券标题" maxlength="10"></el-input>
+            <el-input v-model="addQuery.title" placeholder="请输入卡券标题(最多10字)" maxlength="10"></el-input>
           </el-form-item>
           <el-form-item label="卡券内容" prop="content">
-            <el-input type="textarea" v-model="addQuery.content" :rows="6" placeholder="请输入卡券内容"></el-input>
+            <el-input
+              type="textarea"
+              v-model="addQuery.content"
+              :rows="6"
+              placeholder="请输入卡券内容(最多50字)"
+              maxlength="50"
+            ></el-input>
           </el-form-item>
 
           <el-form-item label="活动时间" prop="cardStatus">
@@ -177,7 +183,7 @@
           </el-form-item>
 
           <el-form-item label="优惠面额(元)" prop="price" v-if="addQuery.type==1">
-            <el-input v-model="addQuery.price" placeholder="请输入优惠面额" maxlength="10"></el-input>
+            <el-input v-model="addQuery.price" placeholder="请输入优惠面额" maxlength="10" type="number"></el-input>
           </el-form-item>
           <el-form-item label="体验面额(元)" prop="price" v-if="addQuery.type==2">
             <el-input v-model="addQuery.price" placeholder="请输入体验面额" maxlength="10" type="number"></el-input>
@@ -185,7 +191,7 @@
           <el-form-item label="发行数量(张)" prop="issueNumber">
             <el-input
               v-model="addQuery.issueNumber"
-              placeholder="请输入优惠面额"
+              placeholder="请输入发行数量"
               maxlength="10"
               type="number"
             ></el-input>
@@ -240,6 +246,7 @@
                 <div>
                   <p>{{params.title}}</p>
                   <p v-if="params.forever === 0">时间：{{params.startTime}}至{{params.endTime}}</p>
+                  <p v-if="params.forever === 1">永久</p>
                 </div>
               </div>
               <p class="r-b">{{params.content}}</p>
@@ -282,8 +289,8 @@ export default {
       addQuery: {
         content: "",
         endTime: "",
-        issueNumber: 0,
-        price: 0,
+        issueNumber: "",
+        price: "",
         startTime: "",
         title: "",
         type: 1,
@@ -324,7 +331,8 @@ export default {
 
       // 优惠券预览
       dialogPrwViewVisible: false,
-      params: {}
+      params: {},
+      cardStatus: 0
     };
   },
 
@@ -459,7 +467,6 @@ export default {
     },
     onSubmit(addQuery) {
       this.$refs[addQuery].validate(valid => {
-        console.log(valid);
         if (valid) {
           if (this.addQuery.forever === 0) {
             this.addQuery.startTime = this.startArr[0];
@@ -468,7 +475,10 @@ export default {
             this.addQuery.startTime = "";
             this.addQuery.endTime = "";
           }
-          this.addCoupon(this.addQuery);
+          if (this.cardStatus === 0) {
+            this.cardStatus = 1;
+            this.addCoupon(this.addQuery);
+          }
         }
       });
     },
@@ -485,11 +495,15 @@ export default {
         });
       }
       if (res.errorCode === 0) {
+        this.cardStatus = 0;
         this.dialogFormVisible = false;
         this.couponList();
       } else if (res.errorCode === -1) {
+        this.cardStatus = 0;
       } else if (res.errorCode === 404) {
+        this.cardStatus = 0;
       } else {
+        this.cardStatus = 0;
         this.$message(res.errorMsg);
       }
     }

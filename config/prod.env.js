@@ -8,5 +8,4 @@ module.exports = {
   // BASE_API: '"http://120.77.233.111:8080/qxiao-cms/"'
   //BASE_API: '"http://10.8.0.117:8080/qxiao-cms/"'
   BASE_API: '"http://ring.qxiao.net/qxiao-cms/"'
-
 }

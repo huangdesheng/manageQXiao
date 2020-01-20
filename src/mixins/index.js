@@ -22,6 +22,9 @@ export const type = {
         name: "老师",
         id: 1
       }, {
+        name: "班主任",
+        id: 2
+      }, {
         name: "管理员",
         id: 0
       }]
