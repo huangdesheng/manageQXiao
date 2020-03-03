@@ -22,6 +22,10 @@ import * as organEntry from './module/organEntry';
 import * as cardManage from './module/cardManage';
 import * as moneyManage from './module/moneyManage';
 import * as integraManage from './module/integraManage';
+import * as logicalThinking from './module/logicalThinking';
+import * as goodWork from './module/goodWork';
+import * as smartReading from './module/smartReading';
+import * as expert from './module/expert';
 export default {
   ...device,
   ...content,
@@ -46,5 +50,9 @@ export default {
   ...organEntry,
   ...cardManage,
   ...moneyManage,
-  ...integraManage
+  ...integraManage,
+  ...logicalThinking,
+  ...goodWork,
+  ...smartReading,
+  ...expert
 }

@@ -232,7 +232,7 @@
               :src="scope.row.smallUrl"
               style="width:40px;height:40px"
               @click="handleViewsImg(scope.$index)"
-            >
+            />
           </template>
         </el-table-column>
         <el-table-column prop="verifyStatus" label="审核状态">
