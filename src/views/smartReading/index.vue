@@ -26,11 +26,19 @@
         <el-table-column label="标题" prop="title"></el-table-column>
         <el-table-column label="简介">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" @click="handleEdit(scope.row)">查看详情</el-button>
+            <el-button size="mini" type="text" @click="handleEdit(scope.row.id)">查看详情</el-button>
+            <!-- <el-button size="mini" type="primary" @click="handleEditArticle(scope.row.id)">编辑</el-button> -->
+            <!-- <el-button size="mini" type="primary" @click="handleDeleteArticle(scope.row.id)">删除</el-button> -->
           </template>
         </el-table-column>
         <el-table-column label="文章链接" prop="url"></el-table-column>
         <el-table-column label="查看人数" prop="viewCount"></el-table-column>
+        <el-table-column width="200" label="操作">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="handleEditArticle(scope.row.id)">编辑</el-button>
+            <el-button size="mini" type="danger" @click="handleDeleteArticle(scope.row.id)">删除</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </div>
     <div class="page-ft">
@@ -115,11 +123,23 @@ export default {
     handleAdd() {
       this.$router.push({ path: `/smartReading/add/9527` });
     },
-    handleEdit(row) {
-      this.isShow = false;
-      this.dialogFormVisible = true;
-      this.form = Object.assign({}, row);
+    handleEdit(id) {
+      this.$router.push({
+        path: "/smartReading/details/9527",
+        query: {
+          id
+        }
+      });
     },
+    handleEditArticle(id) {
+      this.$router.push({
+        path: "/smartReading/edit/9527",
+        query: {
+          id
+        }
+      });
+    },
+
     handleDel(actionId) {
       this.$confirm(`确定删除吗?`, "提示", {
         confirmButtonText: "确定",
@@ -191,9 +211,31 @@ export default {
         this.$refs.form.resetFields();
         this.thinkList(this.query);
       }
+    },
+    handleDeleteArticle(id) {
+      this.$confirm(`确定删除该文章吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.deleteArticle(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+    async deleteArticle(id) {
+      let res = await service.deleteArticle(id);
+      if (res.errorCode === 0) {
+        this.articleList(this.query);
+      }
     }
   },
   mounted() {
+    this.articleList(this.query);
+  },
+  activated() {
     this.articleList(this.query);
   }
 };

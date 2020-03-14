@@ -87,7 +87,7 @@
         ></el-pagination>
       </div>
     </div>
-    <!-- dialog -->
+    <!-- 审核 -->
     <el-dialog top="40px" :visible.sync="dialogFormVisible">
       <span slot="title" class="dialog-title">{{ isShowform ? '作品审核': '图片预览' }}</span>
       <img :src="query.url" alt />
@@ -116,7 +116,7 @@
         </el-form>
       </template>
     </el-dialog>
-
+    <!-- 审核节点 -->
     <el-dialog top="40px" :visible.sync="dialogFormVisiblePass">
       <span slot="title" class="dialog-title">审核节点</span>
       <el-table :data="tableDataPass" style="width: 100%" size="small">
@@ -196,11 +196,11 @@ export default {
       this.query.pageSize = size;
       this.workList(this.query);
     },
-    handleAdd() {
-      this.isShow = true;
-      this.dialogFormVisible = true;
-      this.form = { optionalElement: "", topicElement: "" };
-    },
+    // handleAdd() {
+    //   this.isShow = true;
+    //   this.dialogFormVisible = true;
+    //   this.form = { optionalElement: "", topicElement: "" };
+    // },
     handleCheck(row) {
       // this.isShow = false;
       this.dialogFormVisiblePass = true;
@@ -215,7 +215,6 @@ export default {
         this.tableDataPass = res.data;
       } else if (res.errorCode === 404) {
         this.tableDataPass = [];
-        // this.totalCount = res.data.total;
       }
     },
 
@@ -261,7 +260,7 @@ export default {
 
     // 作品类型
     async workType(params = {}) {
-      let res = await service.workType({
+      let res = await service.listType({
         headers: { "Content-Type": "application/json" }
       });
       if (res.errorCode === 0) {

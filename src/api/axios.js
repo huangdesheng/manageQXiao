@@ -40,7 +40,7 @@ service.interceptors.request.use(config => {
 // 响应拦截器
 service.interceptors.response.use(config => {
   const res = config.data;
-  if (res.errorCode === -1 && res.errorMsg === "用户未登录，请登录！") {
+  if (res.errorCode === 401) {
     MessageBox.alert("请重新登陆", "提示", {
       type: 'error',
       showClose: false,

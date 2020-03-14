@@ -143,7 +143,7 @@
             name="files"
             ref="upload"
             accept="image/jpeg, image/gif, image/png, image/bmp"
-            action="/qxiao-cms/action/mod-xiaojiao/image/filesUpload.do"
+            action="qxiao-cms/action/mod-xiaojiao/image/filesUpload.do"
             :multiple="false"
             :show-file-list="false"
             :auto-upload="true"
@@ -153,7 +153,6 @@
             <i class="el-icon-plus"></i>
           </el-upload>
         </template>
-
         <template>
           <el-row :gutter="10" style="margin-top:-40px">
             <el-col :span="24">
@@ -189,7 +188,7 @@
                   <el-form-item label="推送年级">
                     <el-select
                       v-model="form.grades"
-                      multiple
+                      :multiple="true"
                       filterable
                       allow-create
                       default-first-option
@@ -203,6 +202,7 @@
                         :value="item.gradeId"
                       ></el-option>
                     </el-select>
+
                     <span class="all" :style="{marginLeft:checked?0:'40px'}">
                       <el-checkbox v-model="checked" @change="allGrade">推送全部年级</el-checkbox>
                     </span>
@@ -249,11 +249,11 @@ export default {
         banner: "",
         content: "",
         id: 0,
+        type: 1,
         title: "",
         url: "",
         intro: "",
-        grades: [],
-        type: 1
+        grades: []
       },
       loadding: false,
       content: "",
@@ -414,11 +414,9 @@ export default {
         this.$message.error("文章内容不能为空");
         return false;
       }
-      this.addArticle(this.form);
+      this.editArticle(this.form);
     },
     handleImageOneSuccess(res, file, fileList) {
-      // console.log(this.editor.getSelection());
-      // return false;
       if (res.errorCode === 0) {
         this.loadding = false;
         let index = this.editor.getSelection().index;
@@ -440,12 +438,11 @@ export default {
       str = str.replace(/&gt;/g, ">");
       return str;
     },
-    async addArticle(params = {}) {
-      let res = await service.addArticle(params, {
+    async editArticle(params = {}) {
+      let res = await service.editArticle(params, {
         headers: { "Content-Type": "application/json" }
       });
       if (res.errorCode === 0) {
-        this.$refs["form"].resetFields();
         this.$router.go(-1);
       }
     },
@@ -463,7 +460,20 @@ export default {
         this.form.banner = res.data[0].url;
       }
     },
-
+    async articleDetails(params) {
+      let res = await service.articleDetails(params, {
+        headers: { "Content-Type": "application/json" }
+      });
+      if (res.errorCode === 0) {
+        this.form = res.data;
+        if (res.data.grades.length == 14) {
+          this.checked = true;
+        } else {
+          this.checked = false;
+        }
+      }
+      console.log(res);
+    },
     allGrade() {
       if (this.checked) {
         let arr = [];
@@ -474,27 +484,14 @@ export default {
       } else {
         this.form.grades = [];
       }
-      console.log(this.form.grades);
     }
   },
   mounted() {
-    bus.$on("collapse", msg => {
-      return msg ? (this.collapse = false) : (this.collapse = true);
-    });
-    console.log(this.editor);
-  },
-  activated() {
-    let form = {
-      banner: "",
-      content: "",
-      id: 0,
-      title: "",
-      url: "",
-      intro: "",
-      grades: [],
-      type: 1
-    };
-    this.form = form;
+    // bus.$on("collapse", msg => {
+    //   return msg ? (this.collapse = false) : (this.collapse = true);
+    // });
+    // console.log(this.editor);
+    this.articleDetails(this.$route.query.id);
   }
 };
 </script>

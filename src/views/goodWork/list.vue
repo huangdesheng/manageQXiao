@@ -28,7 +28,7 @@
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
-            <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button>
+            <!-- <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button> -->
           </el-form-item>
         </el-form>
       </div>
