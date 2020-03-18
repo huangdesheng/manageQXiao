@@ -143,7 +143,7 @@
             name="files"
             ref="upload"
             accept="image/jpeg, image/gif, image/png, image/bmp"
-            action="qxiao-cms/action/mod-xiaojiao/image/filesUpload.do"
+            action="/qxiao-cms/action/mod-xiaojiao/image/filesUpload.do"
             :multiple="false"
             :show-file-list="false"
             :auto-upload="true"

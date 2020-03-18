@@ -26,6 +26,7 @@
     <div class="page-bd">
       <el-table :data="tableData" style="width: 100%" size="small">
         <el-table-column label="序号" type="index"></el-table-column>
+        <el-table-column label="题目" prop="title"></el-table-column>
         <el-table-column label="主题元素" prop="topicElement"></el-table-column>
         <el-table-column label="可择元素" prop="optionalElement"></el-table-column>
         <el-table-column label="答题人数" prop="answerCount"></el-table-column>
@@ -57,22 +58,56 @@
       <span slot="title" class="dialog-title">{{ isShow ? '题目录入': '编辑题目' }}</span>
       <el-form ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
         <el-form-item
-          label="主题元素"
-          prop="topicElement"
+          label="题目"
+          prop="title"
           :rules="[
-          { required: true, message: '请输入主题元素', trigger: 'blur' }
+          { required: true, message: '请输入题目', trigger: 'blur' }
         ]"
         >
-          <el-input v-model="form.topicElement" placeholder="请输入主题元素"></el-input>
+          <el-input v-model="form.title" placeholder="请输入题目"></el-input>
         </el-form-item>
-        <el-form-item
-          label="可择元素"
-          prop="optionalElement"
-          :rules="[
-          { required: true, message: '请输入可择元素', trigger: 'blur' }
-        ]"
-        >
-          <el-input v-model="form.optionalElement" placeholder="请输入可择元素"></el-input>
+        <el-form-item label="主题元素">
+          <!-- <el-input v-model="form.topicElement" placeholder="请输入主题元素"></el-input>
+          <el-input v-model="form.topicElement" placeholder="请输入主题元素"></el-input>
+          <el-input v-model="form.topicElement" placeholder="请输入主题元素"></el-input>-->
+
+          <div class="demo-input-size">
+            <el-input placeholder="请输入内容" suffix-icon="el-icon-date" v-model="form2.topicElement_a"></el-input>
+            <el-input placeholder="请输入内容" suffix-icon="el-icon-date" v-model="form2.topicElement_b"></el-input>
+            <el-input placeholder="请输入内容" suffix-icon="el-icon-date" v-model="form2.topicElement_c"></el-input>
+            <!-- <el-input placeholder="请输入内容" suffix-icon="el-icon-date" v-model="input4"></el-input> -->
+          </div>
+        </el-form-item>
+        <el-form-item label="可择元素">
+          <div class="demo-input-size">
+            <el-input
+              placeholder="请输入内容"
+              suffix-icon="el-icon-date"
+              v-model="form2.optionalElement_a"
+            ></el-input>
+            <el-input
+              placeholder="请输入内容"
+              suffix-icon="el-icon-date"
+              v-model="form2.optionalElement_b"
+            ></el-input>
+            <el-input
+              placeholder="请输入内容"
+              suffix-icon="el-icon-date"
+              v-model="form2.optionalElement_c"
+            ></el-input>
+            <el-input
+              placeholder="请输入内容"
+              suffix-icon="el-icon-date"
+              v-model="form2.optionalElement_d"
+            ></el-input>
+            <el-input
+              placeholder="请输入内容"
+              suffix-icon="el-icon-date"
+              v-model="form2.optionalElement_e"
+            ></el-input>
+            <!-- <el-input placeholder="请输入内容" suffix-icon="el-icon-date" v-model="input4"></el-input> -->
+          </div>
+          <!-- <el-input v-model="form.optionalElement" placeholder="请输入可择元素"></el-input> -->
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -96,10 +131,22 @@ export default {
         pageNum: 1,
         topicElement: ""
       },
-      form: {
-        optionalElement: "",
-        topicElement: ""
+      form2: {
+        topicElement_a: "",
+        topicElement_b: "",
+        topicElement_c: "",
+        optionalElement_a: "",
+        optionalElement_b: "",
+        optionalElement_c: "",
+        optionalElement_d: "",
+        optionalElement_e: ""
       },
+      form: {
+        optionalElement: [],
+        topicElement: [],
+        title: ""
+      },
+
       tableData: [],
       totalCount: 0
     };
@@ -120,12 +167,41 @@ export default {
     handleAdd() {
       this.isShow = true;
       this.dialogFormVisible = true;
-      this.form = { optionalElement: "", topicElement: "" };
+      this.form = { title: "", optionalElement: [], topicElement: [] };
+      this.form2 = {
+        topicElement_a: "",
+        topicElement_b: "",
+        topicElement_c: "",
+        optionalElement_a: "",
+        optionalElement_b: "",
+        optionalElement_c: "",
+        optionalElement_d: "",
+        optionalElement_e: ""
+      };
     },
     handleEdit(row) {
       this.isShow = false;
       this.dialogFormVisible = true;
-      this.form = Object.assign({}, row);
+      this.logicDetails(row.id);
+      // this.form = Object.assign({}, row);
+    },
+
+    async logicDetails(id) {
+      let res = await service.logicDetails(id);
+      if (res.errorCode === 0) {
+        this.form2 = {
+          topicElement_a: res.data.topicElement[0],
+          topicElement_b: res.data.topicElement[1],
+          topicElement_c: res.data.topicElement[2],
+          optionalElement_a: res.data.optionalElement[0],
+          optionalElement_b: res.data.optionalElement[1],
+          optionalElement_c: res.data.optionalElement[2],
+          optionalElement_d: res.data.optionalElement[3],
+          optionalElement_e: res.data.optionalElement[4]
+        };
+        this.form = Object.assign({}, res.data);
+      }
+      console.log(res);
     },
     handleDel(actionId) {
       this.$confirm(`确定删除吗?`, "提示", {
@@ -147,6 +223,19 @@ export default {
     //   return this.form.rules.splice(index, 1);
     // },
     submitForm(formName) {
+      this.form.topicElement = [
+        this.form2.topicElement_a,
+        this.form2.topicElement_b,
+        this.form2.topicElement_c
+      ];
+
+      this.form.optionalElement = [
+        this.form2.optionalElement_a,
+        this.form2.optionalElement_b,
+        this.form2.optionalElement_c,
+        this.form2.optionalElement_d,
+        this.form2.optionalElement_e
+      ];
       this.$refs[formName].validate(valid => {
         if (valid) {
           if (this.isShow) {
@@ -176,6 +265,8 @@ export default {
         this.dialogFormVisible = false;
         this.$refs.form.resetFields();
         this.thinkList(this.query);
+      } else {
+        this.$message({ message: `${res.errorMsg}`, type: "warnning" });
       }
     },
     //删除系统默认行为
@@ -197,6 +288,8 @@ export default {
         this.dialogFormVisible = false;
         this.$refs.form.resetFields();
         this.thinkList(this.query);
+      } else {
+        this.$message({ message: `${res.errorMsg}`, type: "warnning" });
       }
     }
   },
@@ -206,4 +299,10 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.demo-input-size {
+  display: flex;
+  > .el-input {
+    margin-right: 20px;
+  }
+}
 </style>

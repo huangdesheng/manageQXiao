@@ -37,14 +37,14 @@ export function auditWork(params, config) {
 }
 
 export function eventTime(params, config) {
-  return ax.post(`/works/event`, params, config)
+  return ax.post(`/works/period`, params, config)
     .then(res => res.data)
     .catch(e => console.log(e));
 }
 
 //作品活动周期
 export function eventTypes(config) {
-  return ax.get(`/works/event`, config)
+  return ax.get(`/works/period`, config)
     .then(res => res.data)
     .catch(e => console.log(e));
 }
