@@ -79,22 +79,42 @@
         :label-width="formLabelWidth"
       >
         <el-form-item label="区域选择" prop="regionIds">
-          <qx-region @last="queryRegion" v-model="form.regionIds"></qx-region>
+          <qx-region @last="queryRegion" v-model="form.regionIds" :disabled="!isShow"></qx-region>
         </el-form-item>
         <el-form-item label="学校名称" prop="terminalSchoolId">
-          <el-select
-            v-model="form.terminalSchoolId"
-            clearable
-            placeholder="选择学校"
-            @change="handleChangeSchool"
-          >
-            <el-option
-              v-for="item in schoolList"
-              :key="item.id"
-              :label="item.name"
-              :value="item.id"
-            ></el-option>
-          </el-select>
+          <template v-if="!isShow">
+            <el-select
+              v-model="form.schoolName"
+              clearable
+              placeholder="选择学校"
+              @change="handleChangeSchool"
+              :disabled="!isShow"
+            >
+              <el-option
+                v-for="item in schoolList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </template>
+
+          <template v-if="isShow">
+            <el-select
+              v-model="form.terminalSchoolId"
+              clearable
+              placeholder="选择学校"
+              @change="handleChangeSchool"
+              :disabled="!isShow"
+            >
+              <el-option
+                v-for="item in schoolList"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </template>
         </el-form-item>
         <el-form-item label="手机号" prop="tel">
           <el-input v-model="form.tel" placeholder="请输入手机号"></el-input>
@@ -505,6 +525,8 @@ export default {
         this.dialogFormVisible = false;
         this.$refs.form.resetFields();
         this.querySchoolList(this.query);
+      } else if (res.errorCode === 1) {
+        this.$message({ message: `${res.errorMsg}`, type: "warning" });
       }
     },
     //根据区域ID查询省市

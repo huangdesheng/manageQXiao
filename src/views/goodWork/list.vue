@@ -225,7 +225,7 @@ export default {
     },
     //删除系统默认行为
     async goodVote(id) {
-      let res = await service.deleteLogic(id, {
+      let res = await service.goodVote(id, {
         headers: { "Content-Type": "application/json" }
       });
       if (res.errorCode === 0) {

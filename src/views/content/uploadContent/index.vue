@@ -231,7 +231,7 @@
         <div class="image-box" v-if="form.showType == 3">
           <el-carousel ref="carousel" height="589px" :autoplay="false">
             <el-carousel-item v-for="(item, index) in form.images" :key="index">
-              <img :src="item.url" class="image" width="400" height="589" :alt="item.name">
+              <img :src="item.url" class="image" width="400" height="589" :alt="item.name" />
             </el-carousel-item>
           </el-carousel>
         </div>
@@ -243,7 +243,7 @@
         <div class="image-box" v-if="form.showType == 4 || form.showType == 5">
           <el-carousel ref="carousel" height="359px" :autoplay="false">
             <el-carousel-item v-for="(item, index) in form.images" :key="index">
-              <img :src="item.url" class="image" width="400" height="359" :alt="item.name">
+              <img :src="item.url" class="image" width="400" height="359" :alt="item.name" />
             </el-carousel-item>
           </el-carousel>
         </div>

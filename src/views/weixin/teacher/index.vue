@@ -63,7 +63,8 @@
         <el-table-column label="手机号" prop="tel"></el-table-column>
         <el-table-column label="职务类别" prop="type">
           <template slot-scope="scope">
-            <span v-if="scope.row.type">老师</span>
+            <span v-if="scope.row.type === 1">老师</span>
+            <span v-else-if="scope.row.type === 2">班主任</span>
             <span v-else>管理员</span>
           </template>
         </el-table-column>
@@ -262,7 +263,13 @@ export default {
               type: "success"
             });
           }
-          this.queryTeachers(this.query);
+          this.queryTeachers(thi.query);
+          this.loading = false;
+        } else if (res.errorCode === 1) {
+          // this.$message({
+          //   message: `${res.errorMsg}`,
+          //   type: "warning"
+          // });
           this.loading = false;
         }
       }
@@ -377,7 +384,14 @@ export default {
         }
       );
       if (res.errorCode === 0) {
-        this.classList = res.data;
+        let arr = [
+          {
+            classId: 0,
+            className: "全部"
+          }
+        ];
+        this.classList = arr.concat(res.data);
+        // this.query.classId = res.data[0].classId;
       }
     }
   },

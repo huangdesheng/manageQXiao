@@ -216,8 +216,8 @@
           label-position="left"
           class="form_class"
         >
-          <el-form-item label="卡券标题" prop="title">
-            <el-input v-model="write.code" placeholder="请输入卡券标题" maxlength="10"></el-input>
+          <el-form-item label="卡券核销码" prop="title">
+            <el-input v-model="write.code" placeholder="请输入核销码" maxlength="10"></el-input>
           </el-form-item>
 
           <el-form-item>
@@ -392,6 +392,7 @@ export default {
     async btnWrite() {
       let res = await service.chargeList(this.write);
       if (res.errorCode === 0) {
+        this.dialogWriteVisible = false;
       } else if (res.errorCode === -1) {
       } else if (res.errorCode === 404) {
         this.$message("优惠券不存在");

@@ -29,8 +29,12 @@
           <el-form-item label="学生姓名">
             <el-input v-model="query.studentName" placeholder="请输入学生姓名" maxlength="10"></el-input>
           </el-form-item>
+          <el-form-item label="ID查询">
+            <el-input v-model="query.nfcId" placeholder="请输入NFC ID"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button size="small" icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
+            <el-button size="small" icon="el-icon-search" type="primary" @click="handleUpdate">刷新</el-button>
             <el-button size="small" icon="el-icon-plus" type="primary" @click="handleAdd">录入</el-button>
             <el-upload
               class="upload-excel"
@@ -267,6 +271,7 @@ export default {
         grade: 0,
         classId: 0,
         studentName: "",
+        nfcId: "",
         schoolId: this.$route.params.id
       },
       studentId: "",
@@ -330,7 +335,12 @@ export default {
           }
         ]
       },
-      classList: []
+      classList: [
+        // {
+        //   classId: 0,
+        //   className: "全部"
+        // }
+      ]
     };
   },
   methods: {
@@ -368,6 +378,8 @@ export default {
             });
           }
           this.queryStudent(this.query);
+          this.loading = false;
+        } else {
           this.loading = false;
         }
       }
@@ -410,11 +422,19 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.deleteStudent(row.studentId);
+          let schoolId = this.$route.params.id;
+          this.deleteStudent(row.studentId, schoolId);
         })
         .catch(error => {
           return false;
         });
+    },
+
+    async handleUpdate() {
+      this.$message({
+        message: "暂无接口",
+        type: "warning"
+      });
     },
 
     // 绑定NFC20191005
@@ -491,7 +511,8 @@ export default {
     async addNfc(formNFC) {
       let data = {
         studentId: this.formNFC.studentId,
-        nfcIds: this.formNFC.nfcIds
+        nfcIds: this.formNFC.nfcIds,
+        classId: this.formNFC.classId
       };
       let res = await service.addNfc(data, {
         headers: { "Content-Type": "application/json" }
@@ -653,9 +674,9 @@ export default {
       }
     },
     //删除学生信息（微信端）
-    async deleteStudent(studentId) {
+    async deleteStudent(studentId, schoolId) {
       let res = await service.deleteStudent(
-        { studentId },
+        { studentId, schoolId },
         {
           headers: { "Content-Type": "application/json" }
         }
@@ -681,7 +702,6 @@ export default {
   activated() {
     this.queryStudent(this.query);
     this.querySchoolClass();
-    console.log(11111);
   }
 };
 </script>

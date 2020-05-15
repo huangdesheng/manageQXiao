@@ -2,7 +2,7 @@ import store from '@/store';
 import axios from 'axios';
 import qs from 'qs';
 import {
-  MessageBox
+  Message
 } from 'element-ui';
 
 import {
@@ -12,7 +12,7 @@ import {
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API,
-  timeout: 5000,
+  timeout: 60000,
   withCredentials: true //允许携带cookie
 });
 
@@ -40,19 +40,30 @@ service.interceptors.request.use(config => {
 // 响应拦截器
 service.interceptors.response.use(config => {
   const res = config.data;
+  // console.log('相应器')
+  // console.log(res)
+  // console.log(res.data)
+  // let data = 1
   if (res.errorCode === 401) {
-    MessageBox.alert("请重新登陆", "提示", {
-      type: 'error',
-      showClose: false,
-      showCancelButton: false,
-    }).then(() => {
-      store.dispatch("qxuser/qxLogout").then(res => {
-        if (res.errorCode === 0) {
-          location.reload();
-        }
-      });
+    // MessageBox.alert("请重新登陆", "提示", {
+    //   type: 'error',
+    //   showClose: false,
+    //   showCancelButton: false,
+    // }).then(() => {
+    store.dispatch("qxuser/qxLogout").then(res => {
+      if (res.errorCode === 0) {
+        location.reload();
+      }
+      // });
     });
     return Promise.reject('error');
+  } else if (res.errorCode === 1) {
+    Message({
+      message: `${res.errorMsg}`,
+      type: "warning"
+    });
+    // return Promise.reject('error');
+    return config;
   } else {
     return config;
   }

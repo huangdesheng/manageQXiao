@@ -37,7 +37,7 @@ export function couponDown(params, config) {
 
 // 核销
 export function chargeList(params, config) {
-  return ax.post(`/coupon/charge/${params.id}`, params, config)
+  return ax.post(`/coupon/charge/${params.code}`, params, config)
     .then(res => res.data)
     .catch(e => console.log(e));
 }
