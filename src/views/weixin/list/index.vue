@@ -32,7 +32,7 @@
         <el-table-column label="学校ID" prop="schoolId"></el-table-column>
         <el-table-column label="学校名称" prop="schoolName"></el-table-column>
         <el-table-column label="手机号" prop="tel"></el-table-column>
-        <el-table-column label="操作" width="766">
+        <el-table-column label="操作" width="900">
           <template slot-scope="scope">
             <el-button
               size="mini"
@@ -47,8 +47,11 @@
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 5)">成绩管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 6)">课表管理</el-button>
             <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId, 7)">考勤导出</el-button>
-            <!-- <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 7)">打卡统计</el-button> -->
-            <!-- <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 8)">打卡轨迹</el-button> -->
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleTemperature(scope.row.schoolId)"
+            >体温导出</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -408,6 +411,7 @@ export default {
 
     handleCurrentChange(curr) {
       this.query.page = curr;
+      this.querySchoolList(this.query);
     },
     handleSizeChange(size) {
       this.query.pageSize = size;

@@ -141,3 +141,10 @@ export function queryApInfo(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// 刷新
+export function terminalSync(params, config) {
+  return ax.post('/action/mod-xiaojiao/terminal/sync', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}

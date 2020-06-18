@@ -24,9 +24,6 @@ export const type = {
       }, {
         name: "班主任",
         id: 2
-      }, {
-        name: "管理员",
-        id: 0
       }]
     }
   }

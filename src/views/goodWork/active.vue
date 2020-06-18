@@ -73,7 +73,10 @@ export default {
       timeList: [
         { periodDay: "7", name: "7天" },
         { periodDay: "15", name: "15天" },
-        { periodDay: "30", name: "30天" }
+        { periodDay: "30", name: "30天" },
+        { periodDay: "60", name: "60天" },
+        { periodDay: "90", name: "90天" },
+        { periodDay: "180", name: "180天" }
       ]
     };
   },

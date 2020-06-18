@@ -198,6 +198,9 @@
         <el-form-item prop="studentName" label="学生姓名">
           <el-input v-model="formNFC.studentName" disabled></el-input>
         </el-form-item>
+        <el-form-item prop="studentName" label="所在班级">
+          <el-input v-model="formNFC.className" disabled></el-input>
+        </el-form-item>
         <el-form-item
           v-for="(item, index) in formNFC.nfcIds"
           label="卡片ID号"
@@ -431,14 +434,17 @@ export default {
     },
 
     async handleUpdate() {
-      this.$message({
-        message: "暂无接口",
-        type: "warning"
-      });
+      let res = await service.terminalSync({ schoolId: this.$route.params.id });
+      if (res.errorCode === 0) {
+        this.$message("刷新成功");
+      } else {
+        this.$message(res.errorMsg);
+      }
     },
 
     // 绑定NFC20191005
     handleAddNFC(row) {
+      console.log(row);
       this.dialogFormVisibleAddNFC = true;
       this.formNFC = Object.assign({}, row, {
         nfcIds: [

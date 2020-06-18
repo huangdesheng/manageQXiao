@@ -19,8 +19,8 @@
           <el-form-item label="班级">
             <el-select v-model="query.classId" placeholder="选择班级">
               <el-option
-                v-for="item in classList"
-                :key="item.classId"
+                v-for="(item,index) in classList"
+                :key="index"
                 :label="item.className"
                 :value="item.classId"
               ></el-option>
@@ -77,8 +77,8 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                  v-for="name in scope.row.classNames"
-                  :key="name.classId"
+                  v-for="(name,index) in scope.row.classNames"
+                  :key="index"
                 >{{ name.className }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -123,32 +123,69 @@
         </el-form-item>
         <el-form-item label="性别" prop="sex">
           <el-select v-model="form.sex" placeholder="选择性别">
-            <el-option v-for="item in sexList" :key="item.id" :label="item.name" :value="item.id"></el-option>
+            <el-option
+              v-for="(item,index) in sexList"
+              :key="index"
+              :label="item.name"
+              :value="item.id"
+            ></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="手机号" prop="tel">
           <el-input v-model="form.tel" placeholder="输入手机号"></el-input>
         </el-form-item>
-        <el-form-item label="类别" prop="type">
-          <el-select v-model="form.type" placeholder="选择职位类别">
-            <el-option v-for="item in typeList" :key="item.id" :label="item.name" :value="item.id"></el-option>
-          </el-select>
+        <el-form-item label="是否是管理员" prop="admin">
+          <el-radio v-model="radio" label="0">否</el-radio>
+          <el-radio v-model="radio" label="1">是</el-radio>
         </el-form-item>
-        <el-form-item label="任教班级" prop="classIds">
-          <el-select
-            multiple
-            collapse-tags
-            v-model="form.classIds"
-            value-key="classId"
-            placeholder="选择任教班级"
-          >
-            <el-option
-              v-for="item in classList"
-              :key="item.classId"
-              :label="item.className"
-              :value="item.classId"
-            ></el-option>
-          </el-select>
+
+        <el-row :gutter="5" v-for="(items,index) in form.classList" :key="index">
+          <el-col :span="8">
+            <el-form-item label="任教班级" prop="classId">
+              <el-select
+                collapse-tags
+                v-model="items.classId"
+                value-key="classId"
+                placeholder="选择任教班级"
+              >
+                <el-option
+                  v-for="(item,index) in classList.filter(item=>item.classId != 0)"
+                  :key="index"
+                  :label="item.className"
+                  :value="item.classId"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item label="类别" prop="classAdmin">
+              <el-select v-model="items.classAdmin" placeholder="选择职位类别">
+                <el-option
+                  v-for="(item,index) in typeList"
+                  :key="index"
+                  :label="item.name"
+                  :value="item.id"
+                ></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+
+          <el-col :span="8">
+            <el-form-item>
+              <el-button
+                size="mini"
+                icon="el-icon-delete"
+                circle
+                type="danger"
+                @click="handleDeleteteacher(index)"
+              ></el-button>
+            </el-form-item>
+          </el-col>
+        </el-row>
+
+        <el-form-item>
+          <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAddTeacher">新增任教老师</el-button>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -179,8 +216,17 @@ export default {
         sex: 1,
         tel: "",
         type: 1,
-        classIds: []
+        classIds: [],
+        admin: 1,
+        classList: []
       },
+      classLists: [
+        {
+          classId: 0,
+          classAdmin: 0
+        }
+      ],
+      radio: "0",
       rules: {
         teacherName: [
           {
@@ -223,7 +269,9 @@ export default {
           }
         ]
       },
-      classList: [],
+
+      classList: [{ classId: 0, className: "全部" }],
+
       innerUrl: "",
       loading: false
     };
@@ -289,16 +337,24 @@ export default {
     handleAdd() {
       this.dialogFormVisible = true;
       this.form = {
-        classIds: []
+        classList: [{ classId: "", classAdmin: "" }]
       };
       this.isShow = true;
     },
+    //  新增任教老师
+    handleAddTeacher() {
+      this.form.classList.push({ classId: "", classAdmin: "" });
+    },
+    // 移除任教老师
+    handleDeleteteacher(index) {
+      this.form.classList.splice(index, 1);
+    },
     handleEdit(row) {
-      let { classNames, ...args } = row;
-      let classIds = classNames.map(item => item.classId);
+      // let { classNames, ...args } = row;
+      // let classIds = classNames.map(item => item.classId);
       this.isShow = false;
       this.dialogFormVisible = true;
-      this.form = Object.assign({}, args, { classIds });
+      this.form = row;
     },
     handleDel(row) {
       this.$confirm(`确定删除吗?`, "提示", {
@@ -314,10 +370,11 @@ export default {
         });
     },
     submitForm(formName) {
+      console.log(this.form);
       this.$refs[formName].validate(valid => {
         if (valid) {
           let schoolId = this.$route.params.id;
-          Object.assign(this.form, { schoolId });
+          Object.assign(this.form, { schoolId, admin: parseInt(this.radio) });
           if (this.isShow) {
             this.addTeacher(this.form);
           } else {
@@ -384,13 +441,7 @@ export default {
         }
       );
       if (res.errorCode === 0) {
-        let arr = [
-          {
-            classId: 0,
-            className: "全部"
-          }
-        ];
-        this.classList = arr.concat(res.data);
+        this.classList = this.classList.concat(res.data);
         // this.query.classId = res.data[0].classId;
       }
     }

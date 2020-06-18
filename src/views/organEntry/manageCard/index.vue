@@ -240,7 +240,8 @@
             <div class="right">
               <div class="r-t">
                 <div>
-                  <span>优惠</span>
+                  <span v-if="params.type === 1">优惠</span>
+                   <span v-if="params.type === 2">价值</span>
                   <span>{{params.price}}</span>
                 </div>
                 <div>
@@ -427,7 +428,6 @@ export default {
     },
     // 优惠券预览
     async handleStage(row) {
-      console.log("优惠券预览");
       let res = await service.previewCoupon(row.id);
       if (res.errorCode === 0) {
         this.params = res.data;

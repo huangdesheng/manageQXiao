@@ -10,16 +10,6 @@
           label-width="70px"
           label-position="left"
         >
-          <!-- <el-form-item label="作品类型">
-            <el-select v-model="query.typeId" placeholder="请选择作品类型">
-              <el-option
-                v-for="item in listType"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
-            </el-select>
-          </el-form-item>-->
           <el-form-item label="审核状态">
             <el-select v-model="query.status" placeholder="请选择作品类型">
               <el-option
@@ -46,16 +36,18 @@
           </el-form-item>
           <el-form-item>
             <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
-            <!-- <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button> -->
+          </el-form-item>
+          <el-form-item>
+            <el-button icon="el-icon-search" type="primary" @click="handleAdd">新增</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
     <div class="page-bd">
-      <el-table :data="tableData" style="width: 100%" size="small">
+      <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="序号" type="index"></el-table-column>
         <el-table-column label="专家名称" prop="name"></el-table-column>
-        <el-table-column label="类别" width="200">
+        <el-table-column label="类别">
           <template slot-scope="scope">
             <span>{{scope.row.typeName}}</span>
           </template>
@@ -73,9 +65,16 @@
           </template>
         </el-table-column>
         <el-table-column label="审核时间" prop="auditTime"></el-table-column>
-        <el-table-column label="操作" width="200">
-          <template slot-scope="scope" v-if="scope.row.status === 0">
-            <el-button size="mini" type="primary" @click="handleVote(scope.row.id)">审核</el-button>
+        <el-table-column label="操作" width="250">
+          <template slot-scope="scope">
+            <el-button
+              size="mini"
+              type="primary"
+              @click="handleVote(scope.row.id)"
+              v-if="scope.row.status === 0"
+            >审核</el-button>
+            <el-button size="mini" plain type="info" @click="handleEdit(scope.row.id)">编辑</el-button>
+            <el-button size="mini" plain type="danger" @click="handleDelete(scope.row.id)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -95,12 +94,6 @@
         ></el-pagination>
       </div>
     </div>
-    <!-- dialog -->
-    <!-- <el-dialog top="40px" :visible.sync="dialogFormVisible">
-      <span slot="title" class="dialog-title">作品预览</span>
-      <img :src="query.url" alt />
-    </el-dialog>-->
-
     <template>
       <el-dialog
         width="60%"
@@ -113,20 +106,15 @@
           <el-form-item label="活动名称">
             <img class="img" alt :style="{backgroundImage: `url(${obj.logo})`}" />
           </el-form-item>
-
           <el-form-item label="专家姓名">
-            <!-- <el-input v-model="obj.name"></el-input> -->
             <span>{{obj.name}}</span>
           </el-form-item>
           <el-form-item label="类别">
-            <!-- <el-input v-model="obj.name"></el-input> -->
             <span>{{obj.typeName}}</span>
           </el-form-item>
-
           <el-form-item label="简介">
             <el-input type="textarea" v-model="obj.intro" :disabled="true"></el-input>
           </el-form-item>
-
           <el-form-item label="代表作">
             <div class="represent">
               <p
@@ -151,12 +139,6 @@
               <el-button size="small" type="primary" @click="checkForm('check')">审核</el-button>
             </el-form-item>
           </template>
-          <!-- <el-form-item label="活动区域">
-            <el-select v-model="form.region" placeholder="请选择活动区域">
-              <el-option label="区域一" value="shanghai"></el-option>
-              <el-option label="区域二" value="beijing"></el-option>
-            </el-select>
-          </el-form-item>-->
         </el-form>
       </el-dialog>
     </template>
@@ -242,12 +224,17 @@ export default {
       this.expertList(this.query);
     },
     handleAdd() {
-      this.isShow = true;
-      this.dialogFormVisible = true;
-      // this.form = { optionalElement: "", topicElement: "" };
+      this.$router.push({ path: `/expert/add/9527` });
+    },
+    handleEdit(id) {
+      this.$router.push({
+        path: "/expert/edit/9527",
+        query: {
+          id
+        }
+      });
     },
     handleCheck(row) {
-      // this.expertStatus = false;
       this.dialogFormVisiblePass = true;
       this.checkExppert(row.id);
     },
@@ -260,7 +247,6 @@ export default {
         this.tableDataPass = res.data;
       } else if (res.errorCode === 404) {
         this.tableDataPass = [];
-        // this.totalCount = res.data.total;
       }
     },
 
@@ -287,7 +273,6 @@ export default {
       this.expertStatus = false;
       this.dialogFormVisible = true;
       this.expertDetails(id);
-      // this.query.url = url;
     },
 
     //查询所有行为
@@ -300,7 +285,6 @@ export default {
         this.totalCount = res.data.total;
       } else if (res.errorCode === 404) {
         this.tableData = [];
-        // this.totalCount = res.data.total;
       }
     },
 
@@ -313,7 +297,6 @@ export default {
         this.listType = this.listType.concat(res.data);
       }
     },
-
     //编辑系统默认行为
     async expertDetails(params) {
       let res = await service.expertDetails(params, {
@@ -321,9 +304,6 @@ export default {
       });
       if (res.errorCode === 0) {
         this.obj = res.data;
-        // this.dialogFormVisible = false;
-        // this.$refs.form.resetFields();
-        // this.thinkList(this.query);
       }
     },
     //删除系统默认行为
@@ -349,9 +329,33 @@ export default {
         this.$refs.form.resetFields();
         this.thinkList(this.query);
       }
+    },
+
+    handleDelete(id) {
+      this.$confirm(`确定删除吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.expertDelete(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
+    async expertDelete(id) {
+      let res = await service.expertDelete(id);
+      if (res.errorCode === 0) {
+        this.$message("删除成功");
+        this.expertList(this.query);
+      } else {
+        this.$message(res.errorMsg);
+      }
     }
   },
-  mounted() {
+  activated() {
     this.expertList(this.query);
     this.expertType();
   }
