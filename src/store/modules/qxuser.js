@@ -47,8 +47,8 @@ export default {
       return new Promise((resolve, reject) => {
         service.login(userInfo).then(res => {
           if (res.errorCode === 0) {
-            commit('SET_TOKEN', res.data.Authorization);
-            setToken(res.data.Authorization);
+            commit('SET_TOKEN', res.data.authorization);
+            setToken(res.data.authorization);
             resolve(res);
           } else {
             resolve(res);

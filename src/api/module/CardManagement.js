@@ -17,6 +17,12 @@ export function punchTable(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+export function punchTemperature(params, config) {
+  return ax.post('/action/mod-xiaojiao/weixin/punch/temperature', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
 
 
 // nfc卡库列表查询===========================

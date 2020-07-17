@@ -63,8 +63,7 @@
         <el-table-column label="手机号" prop="tel"></el-table-column>
         <el-table-column label="职务类别" prop="type">
           <template slot-scope="scope">
-            <span v-if="scope.row.type === 1">老师</span>
-            <span v-else-if="scope.row.type === 2">班主任</span>
+            <span v-if="scope.row.admin === 0">老师</span>
             <span v-else>管理员</span>
           </template>
         </el-table-column>
@@ -77,7 +76,7 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                  v-for="(name,index) in scope.row.classNames"
+                  v-for="(name,index) in scope.row.classList"
                   :key="index"
                 >{{ name.className }}</el-dropdown-item>
               </el-dropdown-menu>

@@ -3,26 +3,15 @@
   <div class="page">
     <div class="page-hd">
       <div class="page-form">
-        <el-form
-          class="demo-form-inline"
-          :inline="true"
-          :model="query"
-          size="small"
-          label-width="70px"
-          label-position="left"
-        >
+        <el-form class="demo-form-inline" :inline="true" :model="query" size="small" label-width="70px"
+          label-position="left">
           <el-form-item label="学校名称">
             <el-input v-model="query.schoolName" placeholder="请输入学校名称" maxlength="10"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
-            <el-button
-              v-if="schoolId === 0"
-              size="small"
-              icon="el-icon-plus"
-              type="primary"
-              @click="handleAdd"
-            >新增</el-button>
+            <el-button v-if="schoolId === 0" size="small" icon="el-icon-plus" type="primary" @click="handleAdd">新增
+            </el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -34,12 +23,7 @@
         <el-table-column label="手机号" prop="tel"></el-table-column>
         <el-table-column label="操作" width="900">
           <template slot-scope="scope">
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleEdit(scope.row)"
-              v-if="schoolId === 0"
-            >编辑</el-button>
+            <el-button size="mini" type="primary" @click="handleEdit(scope.row)" v-if="schoolId === 0">编辑</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 1)">班级管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 2)">老师管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 3)">学生管理</el-button>
@@ -47,75 +31,37 @@
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 5)">成绩管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 6)">课表管理</el-button>
             <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId, 7)">考勤导出</el-button>
-            <el-button
-              size="mini"
-              type="primary"
-              @click="handleTemperature(scope.row.schoolId)"
-            >体温导出</el-button>
+            <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId,8)">体温导出</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page-ft">
       <div class="qx-pagination" v-if="totalCount">
-        <el-pagination
-          background
-          small
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="query.page"
-          :page-size="query.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalCount"
-        ></el-pagination>
+        <el-pagination background small @size-change="handleSizeChange" @current-change="handleCurrentChange"
+          :current-page="query.page" :page-size="query.pageSize" layout="total, sizes, prev, pager, next, jumper"
+          :total="totalCount"></el-pagination>
       </div>
     </div>
     <!-- 新增 or 编辑 -->
     <el-dialog top="40px" :visible.sync="dialogFormVisible">
       <span slot="title" class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
-      <el-form
-        :rules="rules"
-        ref="form"
-        :model="form"
-        status-icon
-        size="small"
-        :label-width="formLabelWidth"
-      >
+      <el-form :rules="rules" ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
         <el-form-item label="区域选择" prop="regionIds">
           <qx-region @last="queryRegion" v-model="form.regionIds" :disabled="!isShow"></qx-region>
         </el-form-item>
         <el-form-item label="学校名称" prop="terminalSchoolId">
           <template v-if="!isShow">
-            <el-select
-              v-model="form.schoolName"
-              clearable
-              placeholder="选择学校"
-              @change="handleChangeSchool"
-              :disabled="!isShow"
-            >
-              <el-option
-                v-for="item in schoolList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="form.schoolName" clearable placeholder="选择学校" @change="handleChangeSchool"
+              :disabled="!isShow">
+              <el-option v-for="item in schoolList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </template>
 
           <template v-if="isShow">
-            <el-select
-              v-model="form.terminalSchoolId"
-              clearable
-              placeholder="选择学校"
-              @change="handleChangeSchool"
-              :disabled="!isShow"
-            >
-              <el-option
-                v-for="item in schoolList"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              ></el-option>
+            <el-select v-model="form.terminalSchoolId" clearable placeholder="选择学校" @change="handleChangeSchool"
+              :disabled="!isShow">
+              <el-option v-for="item in schoolList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </template>
         </el-form-item>
@@ -131,70 +77,35 @@
 
     <!-- 考勤导出 -->
     <div class="derive_box" v-if="schoolgradeName.length>0">
-      <el-dialog
-        top="40px"
-        :visible.sync="attendanceSheet"
-        v-loading="loading"
-        element-loading-text="正在下载中..."
-        element-loading-background="rgba(0, 0, 0, 0.8)"
-      >
-        <p class="derive">考勤导出</p>
+      <el-dialog top="40px" :visible.sync="attendanceSheet" v-loading="loading" element-loading-text="正在下载中..."
+        element-loading-background="rgba(0, 0, 0, 0.8)">
+        <p class="derive" v-if="k_t_index === 7">考勤导出</p>
+        <p class="derive" v-if="k_t_index === 8">体温导出</p>
         <el-form :inline="true" :model="form" class="demo-form-inline" :rules="rules" ref="form">
           <!-------------------------------------------------------------------------------- -->
           <div class="block">
             <el-form-item label="开始时间" prop="startTime">
-              <el-date-picker
-                v-model="form.startTime"
-                ref="startTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                value-format="timestamp"
-                @blur="BeginFocus"
-              >></el-date-picker>
+              <el-date-picker v-model="form.startTime" ref="startTime" type="datetime" placeholder="选择日期时间"
+                value-format="timestamp" @blur="BeginFocus">></el-date-picker>
             </el-form-item>
           </div>
-
           <div class="block">
             <el-form-item label="结束时间" prop="endTime">
-              <el-date-picker
-                v-model="form.endTime"
-                ref="endTime"
-                type="datetime"
-                placeholder="选择日期时间"
-                value-format="timestamp"
-                @blur="endFocus"
-              ></el-date-picker>
+              <el-date-picker v-model="form.endTime" ref="endTime" type="datetime" placeholder="选择日期时间"
+                value-format="timestamp" @blur="endFocus"></el-date-picker>
             </el-form-item>
           </div>
           <!-- ------------------------------------------------------------------------------ -->
           <el-form-item label="选择年级" prop="gradeClass">
-            <el-select
-              v-model="form.gradeClass"
-              placeholder="请选择年级"
-              ref="gradeClass"
-              @change="getIndex"
-            >
-              <el-option
-                v-for="(item,index) in schoolgradeName"
-                :key="item.classId"
-                :label="item.gradeName"
-                :value="index"
-              ></el-option>
+            <el-select v-model="form.gradeClass" placeholder="请选择年级" ref="gradeClass" @change="getIndex">
+              <el-option v-for="(item,index) in schoolgradeName" :key="item.classId" :label="item.gradeName"
+                :value="index"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="选择班级" prop="whatClass">
-            <el-select
-              v-model="form.whatClass"
-              placeholder="请选择班级"
-              ref="whatClass"
-              @change="getClassId"
-            >
-              <el-option
-                v-for="(item,index) in schoolgradeName[classIndex].classes"
-                :key="item.id"
-                :label="item.className"
-                :value="index"
-              ></el-option>
+            <el-select v-model="form.whatClass" placeholder="请选择班级" ref="whatClass" @change="getClassId">
+              <el-option v-for="(item,index) in schoolgradeName[classIndex].classes" :key="item.id"
+                :label="item.className" :value="index"></el-option>
             </el-select>
           </el-form-item>
           <!-- ----------------------------------------------------------------------------- -->
@@ -232,7 +143,7 @@ export default {
       ClassId: "",
       loading: false,
       loadingTime: "",
-
+      k_t_index: 7,
       query: {
         schoolName: "",
         leaderName: ""
@@ -312,10 +223,10 @@ export default {
   },
 
   methods: {
-    getIndex: function(event) {
+    getIndex: function (event) {
       this.classIndex = event;
     },
-    getClassId: function(e) {
+    getClassId: function (e) {
       this.ClassId = this.schoolgradeName[this.classIndex].classes[e].classId;
     },
     BeginFocus() {
@@ -336,6 +247,7 @@ export default {
     },
     // 考勤导出
     async punchTableBtn(schoolId, index) {
+      this.k_t_index = index
       let data = {
         schoolId: schoolId
       };
@@ -384,7 +296,6 @@ export default {
             ss = ss < 10 ? "0" + ss : ss;
             var setEnd =
               yy + "-" + MMM + "-" + dd + " " + hh + ":" + mm + ":" + ss;
-
             let formObj = {
               classId: this.ClassId,
               startTime: setStart,
@@ -399,13 +310,23 @@ export default {
 
     async punchTable(params) {
       this.loading = true;
-      let res = await service.punchTable(params, {
-        headers: { "Content-Type": "application/json" }
-      });
+      let res
+      if (this.k_t_index === 7) {
+        res = await service.punchTable(params, {
+          headers: { "Content-Type": "application/json" }
+        });
+      } else {
+        res = await service.punchTemperature(params, {
+          headers: { "Content-Type": "application/json" }
+        });
+      }
+
       if (res.errorCode === 0) {
         this.innerUrl = res.data.tablePath;
         this.loading = false;
         window.location.href = this.innerUrl;
+      } else {
+        this.$message({ message: res.errorMsg, type: "warning" });
       }
     },
 

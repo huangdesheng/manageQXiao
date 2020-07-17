@@ -1,29 +1,14 @@
 <template>
-  <div
-    class="page"
-    v-loading="loading"
-    element-loading-text="正在导入"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
-  >
+  <div class="page" v-loading="loading" element-loading-text="正在导入" element-loading-spinner="el-icon-loading"
+    element-loading-background="rgba(0, 0, 0, 0.8)">
     <div class="page-hd">
       <div class="page-form">
-        <el-form
-          class="demo-form-inline"
-          :inline="true"
-          :model="query"
-          size="small"
-          label-width="70px"
-          label-position="left"
-        >
+        <el-form class="demo-form-inline" :inline="true" :model="query" size="small" label-width="70px"
+          label-position="left">
           <el-form-item label="班级">
             <el-select v-model="query.classId" placeholder="选择班级">
-              <el-option
-                v-for="item in classList"
-                :key="item.classId"
-                :label="item.className"
-                :value="item.classId"
-              ></el-option>
+              <el-option v-for="item in classList" :key="item.classId" :label="item.className" :value="item.classId">
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="学生姓名">
@@ -34,19 +19,10 @@
           </el-form-item>
           <el-form-item>
             <el-button size="small" icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
-            <el-button size="small" icon="el-icon-search" type="primary" @click="handleUpdate">刷新</el-button>
+            <el-button size="small" icon="el-icon-search" type="primary" @click="handleUpdate">数据同步</el-button>
             <el-button size="small" icon="el-icon-plus" type="primary" @click="handleAdd">录入</el-button>
-            <el-upload
-              class="upload-excel"
-              ref="excel"
-              list-type="text"
-              :multiple="false"
-              :with-credentials="true"
-              :show-file-list="false"
-              action
-              accept=".xls, .xlsx"
-              :before-upload="beforeUpload"
-            >
+            <el-upload class="upload-excel" ref="excel" list-type="text" :multiple="false" :with-credentials="true"
+              :show-file-list="false" action accept=".xls, .xlsx" :before-upload="beforeUpload">
               <el-button size="small" icon="el-icon-plus" type="primary">文件导入上传</el-button>
             </el-upload>
           </el-form-item>
@@ -89,30 +65,16 @@
     </div>
     <div class="page-ft">
       <div class="qx-pagination" v-if="totalCount">
-        <el-pagination
-          background
-          small
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="query.page"
-          :page-size="query.pageSize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalCount"
-        ></el-pagination>
+        <el-pagination background small @size-change="handleSizeChange" @current-change="handleCurrentChange"
+          :current-page="query.page" :page-size="query.pageSize" layout="total, sizes, prev, pager, next, jumper"
+          :total="totalCount"></el-pagination>
       </div>
     </div>
 
     <!-- 新增 or 编辑 -->
     <el-dialog top="40px" title :visible.sync="dialogFormVisible">
       <span slot="title" class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
-      <el-form
-        :rules="rules"
-        ref="form"
-        :model="form"
-        status-icon
-        size="small"
-        :label-width="formLabelWidth"
-      >
+      <el-form :rules="rules" ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
         <el-form-item label="学生姓名" prop="studentName">
           <el-input v-model="form.studentName" placeholder="请输入学生姓名"></el-input>
         </el-form-item>
@@ -123,12 +85,8 @@
         </el-form-item>
         <el-form-item label="班级" prop="classId">
           <el-select v-model="form.classId" placeholder="选择班级">
-            <el-option
-              v-for="item in classList"
-              :key="item.classId"
-              :label="item.className"
-              :value="item.classId"
-            ></el-option>
+            <el-option v-for="item in classList" :key="item.classId" :label="item.className" :value="item.classId">
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
@@ -144,24 +102,14 @@
           <el-col :span="8">
             <el-form-item :label="`关系`" :prop="`relation`">
               <el-select v-model="item.relation" placeholder="请选择学生与家长关系">
-                <el-option
-                  v-for="item in relationList"
-                  :key="item.id"
-                  :label="item.name"
-                  :value="item.id"
-                ></el-option>
+                <el-option v-for="item in relationList" :key="item.id" :label="item.name" :value="item.id"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="8">
             <el-form-item>
-              <el-button
-                size="mini"
-                icon="el-icon-delete"
-                circle
-                type="danger"
-                @click="handleRemoveLinkMan(index)"
-              ></el-button>
+              <el-button size="mini" icon="el-icon-delete" circle type="danger" @click="handleRemoveLinkMan(index)">
+              </el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -179,12 +127,8 @@
         <el-form-item prop="studentName" label="学生姓名">
           <el-input v-model="formNFC.studentName" disabled></el-input>
         </el-form-item>
-        <el-form-item
-          v-for="(item, index) in formNFC.studentNfc"
-          label="卡片ID号"
-          :key="index"
-          :prop="'studentNfc.' + index"
-        >
+        <el-form-item v-for="(item, index) in formNFC.studentNfc" label="卡片ID号" :key="index"
+          :prop="'studentNfc.' + index">
           <el-input :value="item.nfcId" disabled></el-input>
           <el-button @click="delForm(item.nfcId,index)">删除</el-button>
         </el-form-item>
@@ -201,14 +145,8 @@
         <el-form-item prop="studentName" label="所在班级">
           <el-input v-model="formNFC.className" disabled></el-input>
         </el-form-item>
-        <el-form-item
-          v-for="(item, index) in formNFC.nfcIds"
-          label="卡片ID号"
-          :key="index"
-          :prop="'nfcIds.' + index"
-        >
+        <el-form-item v-for="(item, index) in formNFC.nfcIds" label="卡片ID号" :key="index" :prop="'nfcIds.' + index">
           <el-input v-model="item.nfcId" type="number"></el-input>
-          <!-- <el-button @click="delFormNFC(index)">查询</el-button> -->
         </el-form-item>
         <el-form-item>
           <el-button @click="addDomain">新增NFC</el-button>
@@ -224,14 +162,8 @@
         <el-form-item prop="studentName" label="学生姓名">
           <el-input v-model="formNFC.studentName" disabled></el-input>
         </el-form-item>
-        <el-form-item
-          v-for="(item, index) in formNFC.nfcIds"
-          label="卡片ID号"
-          :key="index"
-          :prop="'nfcIds.' + index"
-        >
+        <el-form-item v-for="(item, index) in formNFC.nfcIds" label="卡片ID号" :key="index" :prop="'nfcIds.' + index">
           <el-input ref="IbeaconNumber" v-model="item.nfcId" type="number"></el-input>
-          <!-- <el-button @click="fineFormIBEACON(index)">查询</el-button> -->
         </el-form-item>
         <el-form-item>
           <el-button @click="addDomain">新增IBEACON</el-button>
@@ -247,12 +179,8 @@
         <el-form-item prop="studentName" label="学生姓名">
           <el-input v-model="formNFC.studentName" disabled></el-input>
         </el-form-item>
-        <el-form-item
-          v-for="(item, index) in formNFC.studentNfc"
-          label="卡片ID号"
-          :key="index"
-          :prop="'studentNfc.' + index"
-        >
+        <el-form-item v-for="(item, index) in formNFC.studentNfc" label="卡片ID号" :key="index"
+          :prop="'studentNfc.' + index">
           <el-input :value="item.beaconName" disabled></el-input>
           <el-button @click="delForm2(item.id,index)">删除</el-button>
         </el-form-item>
@@ -338,12 +266,7 @@ export default {
           }
         ]
       },
-      classList: [
-        // {
-        //   classId: 0,
-        //   className: "全部"
-        // }
-      ]
+      classList: []
     };
   },
   methods: {
@@ -433,7 +356,22 @@ export default {
         });
     },
 
-    async handleUpdate() {
+    // 数据同步
+    handleUpdate(row) {
+      this.$confirm(`是否同步学生数据`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(() => {
+          this.asyncData();
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
+    async asyncData() {
       let res = await service.terminalSync({ schoolId: this.$route.params.id });
       if (res.errorCode === 0) {
         this.$message("刷新成功");
