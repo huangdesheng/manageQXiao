@@ -38,6 +38,7 @@
             </template>
           </el-table-column>
           <el-table-column label="用户角色" prop="roleName" :show-overflow-tooltip="true"></el-table-column>
+          <el-table-column label="用户名称" prop="nickName" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="负责人" prop="masterName" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="负责人电话" prop="masterPhone" :show-overflow-tooltip="true"></el-table-column>
           <el-table-column label="所属学校" prop="name" :show-overflow-tooltip="true"></el-table-column>
@@ -98,6 +99,9 @@
           </el-form-item>
           <el-form-item label="确认密码" prop="checkPass">
             <el-input type="password" v-model="form.checkPass" placeholder="请确认密码"></el-input>
+          </el-form-item>
+          <el-form-item label="用户名称" prop="nickName">
+            <el-input  v-model="form.nickName" placeholder="请输入用户名称"></el-input>
           </el-form-item>
           <el-form-item label="用户角色" prop="roleId">
             <el-select v-model="form.roleId" placeholder="选择用户角色">
@@ -168,6 +172,10 @@
               <p>
                 用户角色：
                 <span>{{ info.roleName }}</span>
+              </p>
+              <p>
+                用户名称：
+                <span>{{ info.nickName }}</span>
               </p>
               <p>
                 负责人：
@@ -274,7 +282,8 @@ export default {
         queryId: null,
         password: "",
         type: 0,
-        regionId: null
+        regionId: null,
+        nickName:''
       },
       reset: {
         accountId: null,
@@ -288,6 +297,7 @@ export default {
         ],
         password: [{ required: true, message: "请输入密码", trigger: "blur" }],
         checkPass: [{ validator: checkPass, trigger: "blur" }],
+        nickName: [{ required: true, message: "请输入用户名称", trigger: "blur" }],
         roleId: [{ required: true, message: "选择用户角色", trigger: "blur" }],
         type: [{ required: true, message: "选择用户类型", trigger: "blur" }],
         regionId: [

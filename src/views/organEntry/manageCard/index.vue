@@ -96,6 +96,9 @@
                 <el-button size="mini" type="primary" @click="handleDown(scope.row)">下架</el-button>
                 <el-button size="mini" type="primary" @click="handleWrite(scope.row)">核销</el-button>
               </template>
+              <template v-if="scope.row.state === 2">
+                <el-button size="mini" type="primary" @click="handleWrite(scope.row)">核销</el-button>
+              </template>
             </template>
           </el-table-column>
         </el-table>

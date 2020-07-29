@@ -11,7 +11,7 @@
           label-width="70px"
           label-position="left"
         >
-          <el-form-item v-if="tableData.length<1">
+          <el-form-item >
             <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button>
           </el-form-item>
         </el-form>

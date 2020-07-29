@@ -292,6 +292,8 @@ export default {
         });
     },
     submitForm(formName) {
+      // console.log(this.form)
+      // return false
       this.$refs[formName].validate(valid => {
         if (valid) {
           let schoolId = this.$route.params.id;

@@ -15,18 +15,16 @@ import {
 const whiteList = ['/login'] // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
-  console.log(to, from)
+  console.log(to)
+  console.log(from)
   Nprogress.start();
   if (getToken()) {
-
     if (to.path === '/login') {
-      console.log(11)
       next({
         path: `${from.path}`
       })
       Nprogress.done();
     } else {
-      console.log(12)
       if (store.getters.menu.length === 0) {
         store.dispatch("comm/qxregion");
         //获取权限菜单
@@ -42,10 +40,8 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
-      console.log(21)
       next()
     } else {
-      console.log(22)
       next(`/login?redirect`);
       Nprogress.done()
     }

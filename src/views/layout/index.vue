@@ -14,7 +14,9 @@
         </el-main>
       </el-container>
     </el-container>-->
+     
     <el-container style="height:100vh;">
+     <qx-agreement @handleAgreement="handleAgreement" v-if="flag"></qx-agreement>
       <!-- 主体 侧边栏 -->
       <qx-aside></qx-aside>
       <el-container class="is-vertical">
@@ -37,13 +39,38 @@
 import qxheader from "./components/headers";
 import qxaside from "./components/asides";
 import qxtabs from "./components/tabs";
-
+import agreement from "@/components/agreement";
+import service from '@/api'
 export default {
   name: "layout",
   components: {
     "qx-header": qxheader,
     "qx-aside": qxaside,
-    "qx-tabs": qxtabs
+    "qx-tabs": qxtabs,
+    'qx-agreement':agreement
+  },
+  data(){
+    return {
+      flag:false
+    }
+  },
+  mounted() {
+    this.checkDeal()
+  },
+  methods:{
+    async handleAgreement() {
+      let res = await service.agreeDeal()
+      if(res.errorCode === 0) {
+         this.flag = false
+      }
+    },
+
+    async checkDeal() {
+      let res =await service.checkDeal()
+      if(res.errorCode === 0) {
+        this.flag = res.data
+      }
+    }
   }
 };
 </script>

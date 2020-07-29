@@ -7,5 +7,6 @@ module.exports = merge(prodEnv, {
   // BASE_API: '"http://192.168.18.199:8081/qxiao-cms/"'
   // BASE_API: '"http://192.168.18.134:80/qxiao-cms/"'
   //BASE_API: '"http://192.168.18.200:8080/qxiao-cms/"'
+  // BASE_API: '"http://192.168.18.128:9091/qxiao-cms/"'
   BASE_API: '"http://192.168.18.128:9091/qxiao-cms/"'
 })

@@ -184,7 +184,7 @@
         </el-row>
 
         <el-form-item>
-          <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAddTeacher">新增任教老师</el-button>
+          <el-button icon="el-icon-plus" size="mini" type="primary" @click="handleAddTeacher">新增任教班级</el-button>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -313,10 +313,6 @@ export default {
           this.queryTeachers(thi.query);
           this.loading = false;
         } else if (res.errorCode === 1) {
-          // this.$message({
-          //   message: `${res.errorMsg}`,
-          //   type: "warning"
-          // });
           this.loading = false;
         }
       }
@@ -335,6 +331,7 @@ export default {
     },
     handleAdd() {
       this.dialogFormVisible = true;
+      this.radio = "0"
       this.form = {
         classList: [{ classId: "", classAdmin: "" }]
       };
@@ -354,6 +351,7 @@ export default {
       this.isShow = false;
       this.dialogFormVisible = true;
       this.form = row;
+      this.radio = this.form.admin.toString()
     },
     handleDel(row) {
       this.$confirm(`确定删除吗?`, "提示", {

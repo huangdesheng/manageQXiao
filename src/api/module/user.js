@@ -80,3 +80,16 @@ export function query(params) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// 是否已签协议
+export function checkDeal(params) {
+  return ax.get('/inst/deal', params)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+export function agreeDeal(params) {
+  return ax.post('/inst/deal', params)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
