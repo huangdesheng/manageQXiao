@@ -178,8 +178,6 @@ export default {
       if (res.errorCode === 0) {
         this.dialogFormVisible = false;
         this.queryChannel();
-      } else if (res.errorCode === 1 || res.errorCode === -1) {
-        this.$message({ message: `${res.errorMsg}`, type: "warning" });
       }
     },
     //编辑栏目

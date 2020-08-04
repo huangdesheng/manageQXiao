@@ -1,7 +1,7 @@
-import router from './router';
-import store from './store';
-import Nprogress from 'nprogress';
-import 'nprogress/nprogress.css';
+import router from "./router";
+import store from "./store";
+import Nprogress from "nprogress";
+import "nprogress/nprogress.css";
 Nprogress.configure({
   showSpinner: false
 });
@@ -10,29 +10,27 @@ import filterAsyncRouter from "@/utils/filterAsyncRouter";
 
 import {
   getToken
-} from '@/utils/auth';
+} from "@/utils/auth";
 
-const whiteList = ['/login'] // no redirect whitelist
+const whiteList = ["/login"]; // no redirect whitelist
 
 router.beforeEach((to, from, next) => {
-  console.log(to)
-  console.log(from)
   Nprogress.start();
   if (getToken()) {
-    if (to.path === '/login') {
+    if (to.path === "/login") {
       next({
         path: `${from.path}`
-      })
+      });
       Nprogress.done();
     } else {
       if (store.getters.menu.length === 0) {
         store.dispatch("comm/qxregion");
         //获取权限菜单
-        store.dispatch('qxuser/querySystemMenus').then(res => {
+        store.dispatch("qxuser/querySystemMenus").then(res => {
           let routeData = res.data.router; //返回的权限路由数据
           let routeLocal = filterAsyncRouter(routeData);
           router.addRoutes(routeLocal);
-        })
+        });
         next();
       } else {
         next();
@@ -40,14 +38,15 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
-      next()
+      // console('我没有登录,我是在login直接输入登录的')
+      next(); //直接在url地址输入/login
     } else {
       next(`/login?redirect`);
-      Nprogress.done()
+      Nprogress.done();
     }
   }
 });
 
 router.afterEach(() => {
-  Nprogress.done()
+  Nprogress.done();
 });

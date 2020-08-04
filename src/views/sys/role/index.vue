@@ -232,8 +232,6 @@ export default {
       let res = await service.deleteRole({ roleId });
       if (res.errorCode === 0) {
         this.queryRoleList(this.query);
-      } else if (res.errorCode === 1) {
-        this.$message({ message: `${res.errorMsg}`, type: "error" });
       }
     },
     //角色列表

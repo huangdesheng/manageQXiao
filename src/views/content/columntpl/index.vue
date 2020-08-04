@@ -601,8 +601,6 @@ export default {
         this.dialogAdd = false;
         this.queryChannelTemplate();
         this.resetForm("tplform");
-      } else if (res.errorCode === 1) {
-        this.$message({ message: `${res.errorMsg}`, type: "warning" });
       }
     },
     //删除栏目模板

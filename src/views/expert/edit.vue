@@ -278,8 +278,6 @@ export default {
       });
       if (res.errorCode === 0) {
         this.$router.go(-1);
-      } else if (res.errorCode === 1) {
-        this.$message(res.errorMsg);
       }
     },
     async upploadImg(img, index) {

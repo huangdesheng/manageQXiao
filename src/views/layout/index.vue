@@ -68,7 +68,7 @@ export default {
     async checkDeal() {
       let res =await service.checkDeal()
       if(res.errorCode === 0) {
-        this.flag = res.data
+        this.flag = !res.data
       }
     }
   }

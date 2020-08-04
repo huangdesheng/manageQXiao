@@ -450,8 +450,6 @@ export default {
         this.dialogFormVisible = false;
         this.$refs.form.resetFields();
         this.querySchoolList(this.query);
-      } else if (res.errorCode === 1) {
-        this.$message({ message: `${res.errorMsg}`, type: "warning" });
       }
     },
     //根据区域ID查询省市
