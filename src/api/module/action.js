@@ -24,3 +24,38 @@ export function addAction(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// 查询动态标语
+export function sloganList(params, config) {
+  return ax.post('/slogan/list', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+// 新增动态标语
+export function addSlogan(params, config) {
+  return ax.post('/slogan', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+// 编辑动态标语
+export function updateSlogan(params, config) {
+  return ax.put('/slogan', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+// 删除动态标语
+export function deleteSlogan(params, config) {
+  return ax.delete(`/slogan/${params.id}`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+// 新增动态标语
+export function userSlogan(params, config) {
+  return ax.post('/slogan/online', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
