@@ -25,6 +25,7 @@
         <el-table-column label="序号" prop="classId"></el-table-column>
         <el-table-column label="年级名称" prop="gradeName"></el-table-column>
         <el-table-column label="班级名称" prop="className"></el-table-column>
+        <el-table-column label="班级简介" prop="intro" v-if="schoolType === 2"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
@@ -38,12 +39,23 @@
     <el-dialog top="40px" title :visible.sync="dialogFormVisible">
       <span slot="title" class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
       <el-form ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
+        <el-form-item label="班级头像" class="flex" v-if="schoolType === 2">
+            <div class="photo">
+              <div v-if="form.logo == '' || form.logo == null">
+                
+                <i class="el-icon-plus"></i>
+              </div>
+              <div v-else style="border:none" class="img">
+                
+                <img alt :style="{backgroundImage: `url(${form.logo})`}" class="photoImg" />
+              </div>
+              <input type="file" @change="upploadImg($event)" />
+            </div>
+        </el-form-item>
         <el-form-item
           label="年级"
           prop="grade"
-          :rules="[
-              { required: true, message: '选择年级', trigger: 'blur' }
-            ]"
+          :rules="[{ required: true, message: '选择年级', trigger: 'blur' }]"
         >
           <el-select v-model="form.grade" placeholder="选择年级">
             <el-option
@@ -57,11 +69,17 @@
         <el-form-item
           label="班级名称"
           prop="className"
-          :rules="[
-              { required: true, message: '请输入班级名称', trigger: 'blur' }
-            ]"
+          :rules="[ { required: true, message: '请输入班级名称', trigger: 'blur' }]"
         >
           <el-input v-model="form.className" placeholder="请输入班级名称"></el-input>
+        </el-form-item>
+         <el-form-item
+          label="班级简介"
+          v-if="schoolType === 2"
+          prop="intro"
+          :rules="[ { required: true, message: '简介不能为空', trigger: 'blur'}]"
+        >
+          <el-input v-model="form.intro" placeholder="最多十五字" maxlength="15"></el-input>
         </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
@@ -79,6 +97,7 @@ export default {
   mixins: [pageMixins],
   data() {
     return {
+      schoolType:'',
       query: {
         className: "",
         schoolId: this.$route.params.id,
@@ -86,8 +105,11 @@ export default {
       },
       form: {
         className: "",
-        grade: null
+        grade: null,
+        logo:'',
+        intro:''
       },
+      logo:'',
       gradeList: []
     };
   },
@@ -97,7 +119,10 @@ export default {
     },
     handleAdd() {
       this.dialogFormVisible = true;
-      this.form = {};
+      this.form = {
+          schoolType:this.schoolType,
+          logo:''
+      };
       this.isShow = true;
     },
     handleEdit(row) {
@@ -120,6 +145,10 @@ export default {
     },
     //表单提交
     submitForm(formName) {
+      if(this.form.logo == '') {
+        this.$message('请上传班级头像')
+        return false
+      }
       this.$refs[formName].validate(valid => {
         if (valid) {
           let schoolId = this.$route.params.id;
@@ -139,6 +168,7 @@ export default {
       });
       if (res.errorCode === 0) {
         this.tableData = res.data;
+        this.schoolType = res.data[0].schoolType
       }
     },
     //新增班级信息（微信端）
@@ -182,8 +212,34 @@ export default {
       });
       if (res.errorCode === 0) {
         this.gradeList = res.data;
+        
       }
-    }
+    },
+
+    async upploadImg(img) {
+      var fileLength = Array.from(img.target.files);
+      var formData = new FormData();
+
+      for (var i = 0; i < fileLength.length; i++) {
+        var file = fileLength[i];
+        formData.append("files", file);
+      }
+      let config = {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      let res = await service.filesUpload(formData, config);
+      if (res.errorCode === 0) {
+        // this.form.logo = res.data[0].url;
+        this.$set(this.form,'logo',res.data[0].url)
+        // this.logo = res.data[0].url;
+        // console.log(this.logo)
+        // console.log(this.form.logo)
+      }else if(res.errorCode === 1) {
+        this.$message(res.errorMsg)
+      }
+    },
   },
   activated() {
     this.queryClasses(this.query);
@@ -192,4 +248,46 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.photo {
+  width: 100px;
+  height: 100px;
+  border-radius: 100%;
+  background: #fff;
+  > div {
+    width: 100px;
+    height: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border:1px solid #dcdfe6;
+    border-radius:100%;
+  }
+
+  > input {
+    width: 100px;
+    height: 100px;
+    border: 10px solid #dcdfe6;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    opacity: 0;
+  }
+}
+
+.photoImg {
+  width: 100px;
+  height: 100px;
+  display: block;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  border-radius: 100%;
+}
+
+
 </style>

@@ -293,6 +293,14 @@ export const typeid = {
         {
           id: 5,
           name: "大学"
+        },
+        {
+          id: 6,
+          name: '培训机构'
+        },
+        {
+          id: 7,
+          name: '其他'
         }
       ]
     }
@@ -356,6 +364,26 @@ export const checkStages = {
         {
           id: 2,
           name: "审核不通过"
+        }
+      ]
+    }
+  }
+}
+
+export const classType = {
+  data() {
+    return {
+      classType: [{
+          id: 0,
+          name: '正式班'
+        },
+        {
+          id: 1,
+          name: '示范班'
+        },
+        {
+          id: 2,
+          name: '模拟班'
         }
       ]
     }

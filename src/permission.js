@@ -18,6 +18,7 @@ router.beforeEach((to, from, next) => {
   Nprogress.start();
   if (getToken()) {
     if (to.path === "/login") {
+      // 在路由上输入/login,在什么页面输入就跳转什么页面
       next({
         path: `${from.path}`
       });
@@ -38,7 +39,7 @@ router.beforeEach((to, from, next) => {
     }
   } else {
     if (whiteList.indexOf(to.path) !== -1) {
-      // console('我没有登录,我是在login直接输入登录的')
+      // console('我免登录页面')
       next(); //直接在url地址输入/login
     } else {
       next(`/login?redirect`);

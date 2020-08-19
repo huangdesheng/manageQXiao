@@ -395,24 +395,10 @@ export default {
 
 .out,
 .photo {
-  //   position: relative;
-  //   left: 0;
-  //   top: 0px;
-  //   background: #fff;
   > div {
     display: flex;
     width: 50vw;
   }
-  //   > input {
-  //     width: 100%;
-  //     height: 100%;
-  //     border: 10px solid #dcdfe6;
-  //     position: absolute;
-  //     left: 0;
-  //     top: 0;
-  //     z-index: 1;
-  //     opacity: 0;
-  //   }
 }
 
 .addPic {
@@ -425,7 +411,6 @@ export default {
   > div {
     width: 100%;
     height: 100%;
-    // border: 1px solid #dcdfe6;
     position: absolute;
     left: 0;
     top: 0;
@@ -438,7 +423,6 @@ export default {
   > input {
     width: 100%;
     height: 100%;
-    // border: 10px solid #dcdfe6;
     position: absolute;
     left: 0;
     top: 0;

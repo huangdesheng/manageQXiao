@@ -24,7 +24,7 @@
         <el-table-column label="操作" width="900">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)" v-if="schoolId === 0">编辑</el-button>
-            <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 1)">班级管理</el-button>
+            <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 1,scope.row.schoolType)">班级管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 2)">老师管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 3)">学生管理</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 4)">学生点评</el-button>
@@ -57,7 +57,6 @@
               <el-option v-for="item in schoolList" :key="item.id" :label="item.name" :value="item.id"></el-option>
             </el-select>
           </template>
-
           <template v-if="isShow">
             <el-select v-model="form.terminalSchoolId" clearable placeholder="选择学校" @change="handleChangeSchool"
               :disabled="!isShow">
@@ -65,6 +64,13 @@
             </el-select>
           </template>
         </el-form-item>
+
+        <el-form-item label="类别">
+          <el-select v-model="form.schoolType" placeholder="选择学校类别" @change="handleChangeSchool">
+            <el-option v-for="item in classType" :key="item.id" :label="item.name" :value="item.id"></el-option>
+          </el-select>
+        </el-form-item>
+
         <el-form-item label="手机号" prop="tel">
           <el-input v-model="form.tel" placeholder="请输入手机号"></el-input>
         </el-form-item>
@@ -124,12 +130,13 @@ import { isPhone } from "@/utils/validator";
 import { mapGetters } from "vuex";
 import pageMixins from "@/mixins/page";
 import qs from "qs";
+import {classType} from '@/mixins'
 export default {
   name: "weixinSchool",
   components: {
     "qx-region": region
   },
-  mixins: [pageMixins],
+  mixins: [pageMixins,classType],
   data() {
     return {
       //考勤导出============
@@ -156,7 +163,8 @@ export default {
         gradeClass: "",
         whatClass: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
+        schoolType:0
       },
       rules: {
         startTime: [
@@ -348,7 +356,8 @@ export default {
       this.isShow = true;
       this.dialogFormVisible = true;
       this.form = {
-        regionIds: []
+        regionIds: [],
+        schoolType:0
       };
     },
     async handleEdit(row) {
@@ -366,7 +375,7 @@ export default {
     },
 
     //班级管理 老师管理 学生管理
-    handleOpen(schoolId, index) {
+    handleOpen(schoolId, index, schoolType) {
       if (index == 1) {
         this.$router.push({
           path: `/weixin/class/${schoolId}`
@@ -402,7 +411,6 @@ export default {
             this.addLeaderInit(args);
           } else {
             this.updateWxSchool(args);
-            // console.log(123);
           }
         }
       });
@@ -482,4 +490,7 @@ export default {
     }
   }
 }
+
+
+
 </style>
