@@ -97,7 +97,7 @@ export default {
   mixins: [pageMixins],
   data() {
     return {
-      schoolType:'',
+      schoolType:this.$route.query.schoolType,
       query: {
         className: "",
         schoolId: this.$route.params.id,
@@ -145,7 +145,7 @@ export default {
     },
     //表单提交
     submitForm(formName) {
-      if(this.form.logo == '') {
+      if(this.form.logo == '' && this.schoolType === 2) {
         this.$message('请上传班级头像')
         return false
       }
@@ -168,7 +168,7 @@ export default {
       });
       if (res.errorCode === 0) {
         this.tableData = res.data;
-        this.schoolType = res.data[0].schoolType
+        // this.schoolType = res.data[0].schoolType
       }
     },
     //新增班级信息（微信端）

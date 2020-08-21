@@ -26,6 +26,8 @@ import * as logicalThinking from './module/logicalThinking';
 import * as goodWork from './module/goodWork';
 import * as smartReading from './module/smartReading';
 import * as expert from './module/expert';
+
+import * as operationStatistics from './module/operationStatistics'
 export default {
   ...device,
   ...content,
@@ -54,5 +56,6 @@ export default {
   ...logicalThinking,
   ...goodWork,
   ...smartReading,
-  ...expert
+  ...expert,
+  ...operationStatistics
 }

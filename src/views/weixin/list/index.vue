@@ -378,11 +378,14 @@ export default {
     handleOpen(schoolId, index, schoolType) {
       if (index == 1) {
         this.$router.push({
-          path: `/weixin/class/${schoolId}`
+          path: `/weixin/class/${schoolId}`,
+          query:{
+            
+          }
         });
       } else if (index == 2) {
         this.$router.push({
-          path: `/weixin/teacher/${schoolId}`
+          path: `/weixin/teacher/${schoolId}`,
         });
       } else if (index == 3) {
         this.$router.push({
