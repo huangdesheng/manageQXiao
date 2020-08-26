@@ -379,11 +379,11 @@ export const classType = {
         },
         {
           id: 1,
-          name: '示范班'
+          name: '模拟班'
         },
         {
           id: 2,
-          name: '模拟班'
+          name: '示范班'
         }
       ]
     }

@@ -17,10 +17,17 @@
       </div>
     </div>
     <div class="page-bd">
-      <el-table :data="tableData" style="width: 100%" size="small">
+      <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="学校ID" prop="schoolId"></el-table-column>
         <el-table-column label="学校名称" prop="schoolName"></el-table-column>
         <el-table-column label="手机号" prop="tel"></el-table-column>
+        <el-table-column label="类型">
+          <template slot-scope="scope">
+            <span v-if="scope.row.schoolType === 0">正式班级</span>
+            <span v-else-if="scope.row.schoolType === 2">示范班级</span>
+            <span v-else-if="scope.row.schoolType === 1">模拟班级</span>
+          </template>
+        </el-table-column>
         <el-table-column label="操作" width="900">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)" v-if="schoolId === 0">编辑</el-button>
@@ -380,7 +387,7 @@ export default {
         this.$router.push({
           path: `/weixin/class/${schoolId}`,
           query:{
-            
+            schoolType
           }
         });
       } else if (index == 2) {

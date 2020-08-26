@@ -33,7 +33,7 @@
         <el-table-column label="奖励类型" align="center">
           <template slot-scope="scope">
             <span v-if="scope.row.prizeType === 0">系统推荐</span>
-            <span v-else-if="scope.row.prizeType === 1">用户自定义</span>
+            <span v-else-if="scope.row.prizeType === 1">自定义</span>
           </template>
         </el-table-column>
         <el-table-column label="使用人数" prop="userCount" align="center"></el-table-column>
@@ -74,8 +74,8 @@ export default {
       listType: [
         { id: "100", name: "全部"},
         { id: "0", name: "系统推荐"},
-        { id: "1", name: "用户自定义"},
-      ],
+        { id: "1", name: "自定义"}
+      ]
     };
   },
   methods: {
@@ -91,10 +91,7 @@ export default {
       this.query.pageSize = size;
       this.prizeStatistics(this.query);
     },
-   
-
-
- 
+  
     //查询所有行为
     async prizeStatistics(params = {}) {
       let res = await service.prizeStatistics(params, {
