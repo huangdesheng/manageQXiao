@@ -285,7 +285,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.deleteTeacher(row.teacherId);
+          this.deleteTeacher(row.teacherId,row.schoolId);
         })
         .catch(error => {
           return false;
@@ -328,9 +328,9 @@ export default {
       }
     },
     //删除老师信息（微信端）
-    async deleteTeacher(teacherId) {
+    async deleteTeacher(teacherId,schoolId) {
       let res = await service.deleteTeacher(
-        { teacherId },
+        { teacherId,schoolId },
         {
           headers: { "Content-Type": "application/json" }
         }

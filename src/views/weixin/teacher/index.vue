@@ -19,7 +19,7 @@
           <el-form-item label="班级">
             <el-select v-model="query.classId" placeholder="选择班级">
               <el-option
-                v-for="(item,index) in classList"
+                v-for="(item,index) in classListCheck"
                 :key="index"
                 :label="item.className"
                 :value="item.classId"
@@ -269,7 +269,8 @@ export default {
         ]
       },
 
-      classList: [{ classId: 0, className: "全部" }],
+      classList: [],
+      classListCheck:[],
 
       innerUrl: "",
       loading: false
@@ -360,7 +361,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.deleteTeacher(row.teacherId);
+          this.deleteTeacher(row.teacherId,row.schoolId);
         })
         .catch(error => {
           return false;
@@ -406,9 +407,9 @@ export default {
       }
     },
     //删除老师信息（微信端）
-    async deleteTeacher(teacherId) {
+    async deleteTeacher(teacherId,schoolId) {
       let res = await service.deleteTeacher(
-        { teacherId },
+        { teacherId,schoolId },
         {
           headers: { "Content-Type": "application/json" }
         }
@@ -438,14 +439,20 @@ export default {
         }
       );
       if (res.errorCode === 0) {
-        this.classList = this.classList.concat(res.data);
+        this.classList = res.data
+        this.classListCheck = res.data.concat([{classId:0,className:'全部'}]);
         // this.query.classId = res.data[0].classId;
       }
     }
   },
-  mounted() {
-    this.queryTeachers(this.query);
-    this.querySchoolClass();
+  // mounted() {
+  //   this.queryTeachers(this.query);
+  //   this.querySchoolClass();
+  // },
+
+  activated() {
+     this.queryTeachers(this.query);
+     this.querySchoolClass();
   }
 };
 </script>

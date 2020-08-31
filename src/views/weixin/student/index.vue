@@ -7,7 +7,7 @@
           label-position="left">
           <el-form-item label="班级">
             <el-select v-model="query.classId" placeholder="选择班级">
-              <el-option v-for="item in classList" :key="item.classId" :label="item.className" :value="item.classId">
+              <el-option v-for="item in classListCheck" :key="item.classId" :label="item.className" :value="item.classId">
               </el-option>
             </el-select>
           </el-form-item>
@@ -266,7 +266,8 @@ export default {
           }
         ]
       },
-      classList: []
+      classList: [],
+      classListCheck:[]
     };
   },
   methods: {
@@ -639,7 +640,8 @@ export default {
         }
       );
       if (res.errorCode === 0) {
-        this.classList = res.data;
+        this.classList = res.data
+        this.classListCheck =  res.data.concat([{classId:0,className:'全部'}])
       }
     }
   },
