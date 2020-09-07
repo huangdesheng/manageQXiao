@@ -14,8 +14,8 @@
           <el-form-item label="学生姓名">
             <el-input v-model="query.studentName" placeholder="请输入学生姓名" maxlength="10"></el-input>
           </el-form-item>
-          <el-form-item label="ID查询">
-            <el-input v-model="query.nfcId" placeholder="请输入NFC ID"></el-input>
+          <el-form-item label="卡号查询">
+            <el-input v-model="query.nfcId" placeholder="请输入卡号"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
@@ -30,11 +30,18 @@
       </div>
     </div>
     <div class="page-bd">
-      <el-table :data="tableData" style="width: 100%" size="small">
+      <el-table :data="tableData" style="width: 100%" size="small" border class="table">
         <el-table-column label="序号" prop="studentId"></el-table-column>
         <el-table-column label="学生姓名" prop="studentName"></el-table-column>
         <el-table-column label="年级" prop="gradeName"></el-table-column>
         <el-table-column label="班级" prop="className"></el-table-column>
+        <template v-if="tableData.nfcIds">
+          <el-table-column label="卡号" prop="nfcIds">
+            <template slot-scope="scope">
+              <p v-for="link in scope.row.nfcIds" :key="link.nfcId">卡号{{index}}:{{link.nfcId}}</p>
+            </template>
+          </el-table-column>
+        </template>
         <el-table-column label="家长" prop="linkMan">
           <template slot-scope="scope">
             <p v-for="link in scope.row.linkMan" :key="link.relation">
@@ -51,14 +58,14 @@
             </p>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="600">
+        <el-table-column label="操作" width="500">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
             <el-button size="mini" type="danger" @click="handleDel(scope.row)">删除</el-button>
             <el-button size="mini" type="danger" @click="handleAddNFC(scope.row)">绑定NFC</el-button>
-            <el-button size="mini" type="danger" @click="handleNFC(scope.row)">解绑NFC</el-button>
+            <!-- <el-button size="mini" type="danger" @click="handleNFC(scope.row)">解绑NFC</el-button> -->
             <el-button size="mini" type="danger" @click="handleAddIBEACON(scope.row)">绑定IBEACON</el-button>
-            <el-button size="mini" type="danger" @click="handleIBEACON(scope.row)">解绑IBEACON</el-button>
+            <!-- <el-button size="mini" type="danger" @click="handleIBEACON(scope.row)">解绑IBEACON</el-button> -->
           </template>
         </el-table-column>
       </el-table>
@@ -121,7 +128,7 @@
     </el-dialog>
 
     <!-- 操作删除NFC -->
-    <el-dialog top="40px" title :visible.sync="dialogFormVisibleNFC">
+    <!-- <el-dialog top="40px" title :visible.sync="dialogFormVisibleNFC">
       <span slot="title" class="dialog-title">解绑NFC</span>
       <el-form :model="formNFC" ref="dynamicValidateForm" label-width="auto" class="demo-dynamic">
         <el-form-item prop="studentName" label="学生姓名">
@@ -133,7 +140,7 @@
           <el-button @click="delForm(item.nfcId,index)">删除</el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>
+    </el-dialog> -->
 
     <!-- 操作绑定NFC -->
     <el-dialog top="40px" title :visible.sync="dialogFormVisibleAddNFC">
@@ -147,9 +154,13 @@
         </el-form-item>
         <el-form-item v-for="(item, index) in formNFC.nfcIds" label="卡片ID号" :key="index" :prop="'nfcIds.' + index">
           <el-input v-model="item.nfcId" type="number"></el-input>
+          <i class="el-icon-delete" @click="handleDeleteNFC(index)"></i>
+        </el-form-item>
+        <el-form-item  label="    " class="btn">
+          <el-button @click="handlePushNFC">新增NFC</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="addDomain">新增NFC</el-button>
+          <el-button @click="handleCancleNFC">取消</el-button>
           <el-button type="primary" @click="submitFormNFC('dynamicValidateForm')">提交</el-button>
         </el-form-item>
       </el-form>
@@ -162,18 +173,22 @@
         <el-form-item prop="studentName" label="学生姓名">
           <el-input v-model="formNFC.studentName" disabled></el-input>
         </el-form-item>
-        <el-form-item v-for="(item, index) in formNFC.nfcIds" label="卡片ID号" :key="index" :prop="'nfcIds.' + index">
-          <el-input ref="IbeaconNumber" v-model="item.nfcId" type="number"></el-input>
+        <el-form-item v-for="(item, index) in formNFC.beaconIds" label="卡片ID号" :key="index">
+          <el-input ref="IbeaconNumber" v-model="item.beaconId" type="number"></el-input>
+          <i class="el-icon-delete" @click="handleDeleteIBEACON(index)"></i>
+        </el-form-item>
+        <el-form-item  label="    " class="btn">
+          <el-button @click="handlePushIBEACON">新增IBEACON</el-button>
         </el-form-item>
         <el-form-item>
-          <el-button @click="addDomain">新增IBEACON</el-button>
-          <el-button type="primary" @click="submitFormIBEACON('dynamicValidateForm')">提交</el-button>
+          <el-button @click="handleCancleIBEACON">取消</el-button>
+          <el-button type="primary" @click="handleSubmitIBEACON('dynamicValidateForm')">提交</el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
     <!-- 解绑IBEACON--wei -->
 
-    <el-dialog top="40px" title :visible.sync="dialogFormVisibleDleIBEACON">
+    <!-- <el-dialog top="40px" title :visible.sync="dialogFormVisibleDleIBEACON">
       <span slot="title" class="dialog-title">解绑IBEACON</span>
       <el-form :model="formNFC" ref="dynamicValidateForm" label-width="auto" class="demo-dynamic">
         <el-form-item prop="studentName" label="学生姓名">
@@ -185,7 +200,7 @@
           <el-button @click="delForm2(item.id,index)">删除</el-button>
         </el-form-item>
       </el-form>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 <script>
@@ -207,11 +222,11 @@ export default {
       },
       studentId: "",
       loading: false,
-      dialogFormVisibleNFC: false,
+      // dialogFormVisibleNFC: false,
       dialogFormVisibleAddNFC: false,
       // 添加与解绑IBEACON
       dialogFormVisibleAddIBEACON: false,
-      dialogFormVisibleDleIBEACON: false,
+      // dialogFormVisibleDleIBEACON: false,
       innerUrl: "",
       formNFC: {
         studentName: "",
@@ -383,73 +398,65 @@ export default {
 
     // 绑定NFC20191005
     handleAddNFC(row) {
-      console.log(row);
+      console.log(row)
       this.dialogFormVisibleAddNFC = true;
-      this.formNFC = Object.assign({}, row, {
-        nfcIds: [
-          {
-            nfcId: ""
-          }
-        ]
+      let { classId, className, studentName, studentId, nfcIds }  = row
+      this.formNFC = Object.assign({}, {
+        classId,
+        className,
+        studentId,
+        studentName,
+        nfcIds: nfcIds.length ? nfcIds : [{nfcId:''}]
       });
     },
-    // 添加NFC20191005
-    addDomain() {
+    // 取消
+    handleCancleNFC() {
+      this.dialogFormVisibleAddNFC = false
+    },
+    // 删除
+    handleDeleteNFC(index){
+      this.formNFC.nfcIds.splice(index,1) 
+    },
+    // 添加NFC
+    handlePushNFC() {
       this.formNFC.nfcIds.push({
         nfcId: ""
       });
     },
     // 删除20191005 NFC
-    delFormNFC(index) {
-      // console.log(index);
-    },
+    // delFormNFC(index) {
+    //   // console.log(index);
+    // },
 
     // 删除IBEACON
-    async delForm2(id, index) {
-      let data = {
-        id
-      };
-      let res = await service.deleteStudentBeaconMac(data, {
-        headers: { "Content-Type": "application/json" }
-      });
-      if (res.errorCode === 0) {
-        this.$message({
-          message: "删除成功",
-          type: "warning"
-        });
-        console.log(this.formNFC.studentNfc.splice(index, 1));
-      }
-    },
+    // async delForm2(id, index) {
+    //   let data = {
+    //     id
+    //   };
+    //   let res = await service.deleteStudentBeaconMac(data, {
+    //     headers: { "Content-Type": "application/json" }
+    //   });
+    //   if (res.errorCode === 0) {
+    //     this.$message({
+    //       message: "删除成功",
+    //       type: "warning"
+    //     });
+    //     console.log(this.formNFC.studentNfc.splice(index, 1));
+    //   }
+    // },
 
-    // 绑定IBEACON弹框---wei
-    handleAddIBEACON(row) {
-      this.dialogFormVisibleAddIBEACON = true;
-      this.formNFC = Object.assign({}, row, {
-        nfcIds: [
-          {
-            nfcIds: ""
-          }
-        ]
-      });
-    },
-
+    
     // 提交新增NFC20191005
     submitFormNFC() {
-      this.formNFC.nfcIds = this.formNFC.nfcIds.filter(
-        item => item.nfcId != ""
+      let nfcIds = this.formNFC.nfcIds.filter(
+        item => item.nfcId === ""
       );
-      if (this.formNFC.nfcIds.length === 0) {
+      if (nfcIds.length > 0) {
         this.$message({
-          message: "请添加nfcId",
+          message: "请输入卡片ID号",
           type: "warning"
         });
-        this.formNFC.nfcIds = [
-          {
-            nfcId: ""
-          }
-        ];
-        return false;
-      } else {
+      }else{
         this.addNfc(this.formNFC);
       }
     },
@@ -468,33 +475,69 @@ export default {
           type: "warning"
         });
         this.dialogFormVisibleAddNFC = false;
-      } else {
-        this.$message({
-          message: res.errorMsg,
-          type: "warning"
-        });
+        this.queryStudent(this.query);
+      }else{
+        this.queryStudent(this.query);
       }
     },
 
-    // 提交绑定IBEACON ---wei--
-    submitFormIBEACON() {
-      let beaconNumber = this.$refs.IbeaconNumber[0].value;
-      // console.log(beaconNumber);
-      if (beaconNumber !== "") {
-        this.addBeacon(this.formNFC);
-      } else {
+    // 绑定IBEACON弹框
+    handleAddIBEACON(row) {
+      console.log(row)
+      let {classId,studentId,schoolId,studentName,beaconIds} = row
+      this.dialogFormVisibleAddIBEACON = true;
+      this.formNFC = Object.assign({},{
+        classId,
+        studentId,
+        schoolId,
+        studentName,
+        beaconIds: beaconIds.length?beaconIds:[{beaconId: ""}]
+      });
+    },
+
+     // 取消
+    handleCancleIBEACON() {
+      this.dialogFormVisibleAddNFC = false
+    },
+    // 删除
+    handleDeleteIBEACON(index){
+      this.formNFC.beaconIds.splice(index,1) 
+    },
+    // 添加IBEACON
+    handlePushIBEACON() {
+      this.formNFC.beaconIds.push({
+        beaconId: ""
+      });
+    },
+
+
+    // 提交绑定IBEACON
+    handleSubmitIBEACON() {
+      // let beaconNumber = this.$refs.IbeaconNumber[0].value;
+      // if (beaconNumber !== "") {
+      //   this.addBeacon(this.formNFC);
+      // } else {
+      //   this.$message({
+      //     message: "请添加IBEACON",
+      //     type: "warning"
+      //   });
+      // }
+
+      let beaconIds = this.formNFC.beaconIds.filter(
+        item => item.beaconId === ""
+      );
+      if (beaconIds.length > 0) {
         this.$message({
-          message: "请添加IBEACON",
+          message: "请输入卡片ID号",
           type: "warning"
         });
+        this.addBeacon(this.formNFC);
+      }else{
+        this.addBeacon(this.formNFC);
       }
     },
     async addBeacon(formNFC) {
-      let data = {
-        beaconId: this.$refs.IbeaconNumber[0].value,
-        studentId: this.formNFC.studentId + ""
-      };
-      let res = await service.addBeacon(data, {
+      let res = await service.addBeacon(formNFC, {
         headers: { "Content-Type": "application/json" }
       });
       if (res.errorCode === 0) {
@@ -503,73 +546,63 @@ export default {
           type: "warning"
         });
         this.dialogFormVisibleAddIBEACON = false;
-      } else {
-        if (res.errorMsg == null) {
-          this.$message({
-            message: res.errorMsg,
-            type: "warning"
-          });
-        } else {
-          this.$message({
-            message: res.errorMsg,
-            type: "warning"
-          });
-        }
+      }else{
+        this.queryStudent(this.query);
       }
     },
+
 
     //查看NFC列表20191005
-    handleNFC(row) {
-      this.queryNfcList(row);
-    },
-    async queryNfcList(row) {
-      let res = await service.queryNfcList(
-        {
-          studentId: row.studentId
-        },
-        {
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-      console.log(res);
-      if (res.errorCode === 0) {
-        this.dialogFormVisibleNFC = true;
-        this.formNFC = Object.assign({}, row, {
-          studentNfc: res.data
-        });
-      }
-    },
+    // handleNFC(row) {
+    //   this.queryNfcList(row);
+    // },
+    // async queryNfcList(row) {
+    //   let res = await service.queryNfcList(
+    //     {
+    //       studentId: row.studentId
+    //     },
+    //     {
+    //       headers: { "Content-Type": "application/json" }
+    //     }
+    //   );
+    //   if (res.errorCode === 0) {
+    //     this.dialogFormVisibleNFC = true;
+    //     this.formNFC = Object.assign({}, row, {
+    //       studentNfc: res.data
+    //     });
+    //   }
+    // },
 
-    // 查询学生beacon信息 --wei
-    async handleIBEACON(row) {
-      let res = await service.queryBeaconByStudentId(
-        {
-          studentId: row.studentId
-        },
-        {
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-      if (res.errorCode === 0) {
-        this.dialogFormVisibleDleIBEACON = true;
-        this.formNFC = Object.assign({}, row, {
-          studentNfc: res.data
-        });
-      }
-    },
+    // 查询学生beacon信息
+    // async handleIBEACON(row) {
+    //   let res = await service.queryBeaconByStudentId(
+    //     {
+    //       studentId: row.studentId
+    //     },
+    //     {
+    //       headers: { "Content-Type": "application/json" }
+    //     }
+    //   );
+    //   if (res.errorCode === 0) {
+    //     this.dialogFormVisibleDleIBEACON = true;
+    //     this.formNFC = Object.assign({}, row, {
+    //       studentNfc: res.data
+    //     });
+    //   }
+    // },
 
     // 解绑NFC20191005
-    async delForm(nfcId, index) {
-      let res = await service.deleteNfcId(
-        { nfcId },
-        {
-          headers: { "Content-Type": "application/json" }
-        }
-      );
-      if (res.errorCode === 0) {
-        this.formNFC.studentNfc.splice(index, 1);
-      }
-    },
+    // async delForm(nfcId, index) {
+    //   let res = await service.deleteNfcId(
+    //     { nfcId },
+    //     {
+    //       headers: { "Content-Type": "application/json" }
+    //     }
+    //   );
+    //   if (res.errorCode === 0) {
+    //     this.formNFC.studentNfc.splice(index, 1);
+    //   }
+    // },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -655,8 +688,7 @@ export default {
 .upload-excel {
   display: inline-block;
   margin-left: 10px;
+  
 }
-.page {
-  height: 100%;
-}
+
 </style>
