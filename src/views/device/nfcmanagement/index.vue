@@ -1,99 +1,125 @@
 <template>
-  <div
-    class="page"
-    v-loading="loading"
-    element-loading-text="正在导入"
-    element-loading-spinner="el-icon-loading"
-    element-loading-background="rgba(0, 0, 0, 0.8)"
-    style="width: 100%;height:100%"
-  >
+  <div class="page"
+       v-loading="loading"
+       element-loading-text="正在导入"
+       element-loading-spinner="el-icon-loading"
+       element-loading-background="rgba(0, 0, 0, 0.8)"
+       style="width: 100%;height:100%">
     <div class="page-hd">
       <!-- 表单 -->
       <div class="page-form">
-        <el-form
-          class="demo-form-inline"
-          :inline="true"
-          :model="query"
-          size="small"
-          label-width="70px"
-          label-position="left"
-        >
+        <el-form class="demo-form-inline"
+                 :inline="true"
+                 :model="query"
+                 size="small"
+                 label-width="70px"
+                 label-position="left">
           <el-form-item label="NO">
-            <el-input v-model="query.searchNO" ref="searchNO"></el-input>
+            <el-input v-model="query.searchNO"
+                      ref="searchNO"></el-input>
           </el-form-item>
           <el-form-item label="ID">
-            <el-input v-model="query.searchID" ref="searchID"></el-input>
+            <el-input v-model="query.searchID"
+                      ref="searchID"></el-input>
           </el-form-item>
 
           <el-form-item>
-            <el-button icon="el-icon-search" type="primary" @click="handleSearch">查询</el-button>
+            <el-button icon="el-icon-search"
+                       type="primary"
+                       @click="handleSearch">查询</el-button>
             <!-- 文件导入 -->
-            <el-upload
-              class="upload-demo"
-              ref="excel"
-              list-type="text"
-              :multiple="false"
-              :with-credentials="true"
-              :show-file-list="false"
-              action
-              accept=".xls"
-              :before-upload="beforeUpload"
-            >
-              <el-button size="small" icon="el-icon-plus" type="primary">文件导入上传</el-button>
+            <el-upload class="upload-demo"
+                       ref="excel"
+                       list-type="text"
+                       :multiple="false"
+                       :with-credentials="true"
+                       :show-file-list="false"
+                       action
+                       accept=".xls"
+                       :before-upload="beforeUpload">
+              <el-button size="small"
+                         icon="el-icon-plus"
+                         type="primary">文件导入上传</el-button>
             </el-upload>
-            <el-button icon="el-icon-plus" type="primary" @click="handleAdd">新增</el-button>
+            <el-button icon="el-icon-plus"
+                       type="primary"
+                       @click="handleAdd">新增</el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
     <div class="page-bd">
       <!-- 表格数据 -->
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column type="index" label="序号" width="200"></el-table-column>
-        <el-table-column prop="nfcId" label="NO"></el-table-column>
-        <el-table-column prop="nfcMac" label="ID"></el-table-column>
+      <el-table :data="tableData"
+                style="width: 100%">
+        <el-table-column type="index"
+                         label="序号"
+                         width="200"></el-table-column>
+        <el-table-column prop="nfcId"
+                         label="NO"></el-table-column>
+        <el-table-column prop="nfcMac"
+                         label="ID"></el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" @click="handleEdit(scope.row)">编辑</el-button>
-            <el-button size="mini" type="danger" @click="handleDel(scope.row)">删除</el-button>
+            <el-button size="mini"
+                       type="primary"
+                       @click="handleEdit(scope.row)">编辑</el-button>
+            <el-button size="mini"
+                       type="danger"
+                       @click="handleDel(scope.row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
     </div>
     <div class="page-ft">
       <!-- 分页 -->
-      <div class="qx-pagination" v-if="totalCount">
-        <el-pagination
-          background
-          small
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="currentPage"
-          :page-size="pagesize"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="totalCount"
-        ></el-pagination>
+      <div class="qx-pagination"
+           v-if="totalCount">
+        <el-pagination background
+                       small
+                       @size-change="handleSizeChange"
+                       @current-change="handleCurrentChange"
+                       :current-page="currentPage"
+                       :page-size="pagesize"
+                       layout="total, sizes, prev, pager, next, jumper"
+                       :total="totalCount"></el-pagination>
       </div>
     </div>
     <!-- 新增 or 编辑 -->
     <template>
-      <el-dialog top="40px" :visible.sync="dialogFormVisible" @close="handleDialogClose">
-        <span slot="title" class="dialog-title">{{ !idShow ? '新增': '编辑' }}</span>
-        <el-form ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
-          <el-form-item label="序号" prop="id" v-if="idShow">
-            <el-input v-model="form.id" disabled></el-input>
+      <el-dialog top="40px"
+                 :visible.sync="dialogFormVisible"
+                 @close="handleDialogClose">
+        <span slot="title"
+              class="dialog-title">{{ !idShow ? '新增': '编辑' }}</span>
+        <el-form ref="form"
+                 :model="form"
+                 status-icon
+                 size="small"
+                 :label-width="formLabelWidth">
+          <el-form-item label="序号"
+                        prop="id"
+                        v-if="idShow">
+            <el-input v-model="form.id"
+                      disabled></el-input>
           </el-form-item>
           <el-form-item label="ID">
-            <el-input v-model="form.nfcMac" placeholder="请输入ID"></el-input>
+            <el-input v-model="form.nfcMac"
+                      placeholder="请输入ID"></el-input>
           </el-form-item>
           <el-form-item label="NO">
-            <el-input v-model="form.nfcId" placeholder="请输入NO"></el-input>
+            <el-input v-model="form.nfcId"
+                      placeholder="请输入NO"></el-input>
           </el-form-item>
         </el-form>
         <!-- 取消提交按钮 -->
-        <span slot="footer" class="dialog-footer">
-          <el-button size="small" @click="dialogFormVisible = false">取消</el-button>
-          <el-button size="small" type="primary" @click="submitForm('form')">确定</el-button>
+        <span slot="footer"
+              class="dialog-footer">
+          <el-button size="small"
+                     @click="dialogFormVisible = false">取消</el-button>
+          <el-button size="small"
+                     type="primary"
+                     @click="submitForm('form')">确定</el-button>
         </span>
       </el-dialog>
     </template>
@@ -114,13 +140,13 @@ export default {
   components: {
     "qx-region": region,
     "qx-region-t": regiont,
-    "base-table": QTable
+    "base-table": QTable,
   },
   mixins: [pageMixins],
   data() {
     return {
       formInline: {
-        region: ""
+        region: "",
       },
       loading: false,
       idShow: false,
@@ -129,7 +155,7 @@ export default {
       selected: "",
       form: {
         regionId: [],
-        labelIds: []
+        labelIds: [],
       },
       // loading: false,
       //默认参数
@@ -137,17 +163,17 @@ export default {
         searchID: "",
         searchNO: "",
         scopeType: this.$store.getters.scopeType,
-        scopeId: this.$store.getters.scopeId
+        scopeId: this.$store.getters.scopeId,
       },
       //分页
       schoolId: null,
       currentPage: 1,
       pagesize: 10,
-      totalCount: ""
+      totalCount: "",
     };
   },
   computed: {
-    ...mapGetters(["scopeType"])
+    ...mapGetters(["scopeType"]),
   },
   methods: {
     // 文件导入上传
@@ -158,14 +184,14 @@ export default {
       if (!extension) {
         this.$message({
           message: "文件只能是xls格式!",
-          type: "warning"
+          type: "warning",
         });
       }
       if (extension || extensions) {
         let config = {
           headers: {
-            "Content-Type": "multipart/form-data"
-          }
+            "Content-Type": "multipart/form-data",
+          },
         };
         let uploadForm = new FormData();
         uploadForm.append("file", file);
@@ -177,7 +203,7 @@ export default {
           } else {
             this.$alert("导入成功", "提示", {
               confirmButtonText: "确定",
-              type: "success"
+              type: "success",
             });
           }
           this.queryNfcAll();
@@ -199,6 +225,7 @@ export default {
     },
     //搜索
     handleSearch() {
+      this.currentPage = 1;
       this.queryNfcAll();
     },
     handleRegionChange(queryId, queryType) {
@@ -216,7 +243,7 @@ export default {
       this.dialogFormVisible = true;
       this.form = {
         regionId: [],
-        labelIds: []
+        labelIds: [],
       };
     },
 
@@ -225,66 +252,66 @@ export default {
       this.$confirm(`确定删除吗?`, "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
-        type: "warning"
+        type: "warning",
       })
         .then(() => {
           this.deleteNfc(row);
         })
-        .catch(error => {
+        .catch((error) => {
           return false;
         });
     },
     async deleteNfc(row) {
       let data = {
-        id: row.id
+        id: row.id,
       };
       let res = await service.deleteNfc(data, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
         this.queryNfcAll();
         this.$message({
           message: "删除成功",
-          type: "warning"
+          type: "warning",
         });
         this.dialogFormVisible = false;
       } else {
         this.$message({
           message: res.errorMsg,
-          type: "warning"
+          type: "warning",
         });
       }
     },
 
     // 新增提交
     submitForm(formNFC) {
-      this.$refs.form.validate(valid => {
+      this.$refs.form.validate((valid) => {
         if (this.form.id) {
           if (!this.form.nfcId && !this.form.nfcMac) {
             this.$message({
               message: "不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else if (this.form.nfcMac == "") {
             this.$message({
               message: "ID不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else if (this.form.nfcId == "") {
             this.$message({
               message: "NO不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else {
             this.$confirm(`确定修改吗?`, "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
-              type: "warning"
+              type: "warning",
             })
               .then(() => {
                 this.updateNfc(this.form);
               })
-              .catch(error => {
+              .catch((error) => {
                 return false;
               });
           }
@@ -292,28 +319,28 @@ export default {
           if (!this.form.nfcId && !this.form.nfcMac) {
             this.$message({
               message: "不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else if (!this.form.nfcId) {
             this.$message({
               message: "NO不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else if (!this.form.nfcMac) {
             this.$message({
               message: "ID不能为空",
-              type: "warning"
+              type: "warning",
             });
           } else {
             this.$confirm(`确定新增吗?`, "提示", {
               confirmButtonText: "确定",
               cancelButtonText: "取消",
-              type: "warning"
+              type: "warning",
             })
               .then(() => {
                 this.addNfcAll(this.form);
               })
-              .catch(error => {
+              .catch((error) => {
                 return false;
               });
           }
@@ -324,23 +351,23 @@ export default {
     async addNfcAll(formNFC) {
       let data = {
         nfcMac: formNFC.nfcMac,
-        nfcId: formNFC.nfcId * 1
+        nfcId: formNFC.nfcId * 1,
       };
       let res = await service.addNfcAll(data, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
         this.queryNfcAll();
         this.$message({
           message: "添加成功",
-          type: "warning"
+          type: "warning",
         });
         this.dialogFormVisible = false;
       } else {
         this.$message({
           // message: "添加失败",
           message: res.errorMsg,
-          type: "warning"
+          type: "warning",
         });
       }
     },
@@ -356,16 +383,16 @@ export default {
       let data = {
         id: formNFC.id,
         nfcId: formNFC.nfcId,
-        nfcMac: formNFC.nfcMac
+        nfcMac: formNFC.nfcMac,
       };
       console.log(data);
       let res = await service.updateNfc(data, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
         this.$message({
           message: "修改成功",
-          type: "warning"
+          type: "warning",
         });
         this.dialogFormVisible = false;
         this.queryNfcAll();
@@ -373,7 +400,7 @@ export default {
         this.$message({
           message: res.errorMsg,
           // message: "修改失败",
-          type: "warning"
+          type: "warning",
         });
       }
     },
@@ -391,21 +418,21 @@ export default {
         page: this.currentPage,
         pageSize: this.pagesize,
         nfcId: this.query.searchNO,
-        nfcMac: this.query.searchID
+        nfcMac: this.query.searchID,
       };
       let res = await service.queryNfcAll(data, {
-        headers: { "Content-Type": "application/json" }
+        headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
         this.tableData = res.data.data;
         this.totalCount = res.data.totalCount;
       }
-    }
+    },
   },
   created() {
     this.queryLabel();
     this.queryNfcAll();
-  }
+  },
 };
 </script>
 <style lang="less" scoped>

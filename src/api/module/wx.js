@@ -55,6 +55,13 @@ export function deleteClass(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+//封存班级信息（微信端）
+export function blockClass(params, config) {
+  return ax.post('/action/mod-xiaojiao/weixin/class/graduation', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
 //用户统计
 export function statistics(params, config) {
   return ax.post('/action/mod-xiaojiao/weixin/statistics/statistics.do', params, config)

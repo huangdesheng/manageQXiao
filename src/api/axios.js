@@ -12,7 +12,7 @@ import {
 // 创建axios实例
 const service = axios.create({
   baseURL: process.env.BASE_API,
-  timeout: 60000,
+  // timeout: 60000,
   withCredentials: true //允许携带cookie
 });
 

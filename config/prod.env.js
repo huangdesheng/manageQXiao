@@ -1,4 +1,4 @@
-'use strict'
+"use strict";
 module.exports = {
   NODE_ENV: '"production"',
   BASE_API: '"https://zc.qxiao.net/qxiao-cms/"'
@@ -8,4 +8,4 @@ module.exports = {
   // BASE_API: '"http://120.77.233.111:8080/qxiao-cms/"'
   //BASE_API: '"http://10.8.0.117:8080/qxiao-cms/"'
   // BASE_API: '"http://yijiao.qxiao.net/qxiao-cms/"'
-}
+};
