@@ -18,8 +18,7 @@
               <el-option v-for="item in classListCheck"
                          :key="item.classId"
                          :label="item.className"
-                         :value="item.classId">
-              </el-option>
+                         :value="item.classId"></el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="学生姓名">
@@ -31,19 +30,29 @@
             <el-input v-model="query.nfcId"
                       placeholder="请输入卡号"></el-input>
           </el-form-item>
+          <el-form-item label="手机查询">
+            <el-input v-model="query.phone"
+                      placeholder="请输入手机号"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button size="small"
                        icon="el-icon-search"
                        type="primary"
-                       @click="handleSearch">查询</el-button>
+                       @click="handleSearch">
+              查询
+            </el-button>
             <el-button size="small"
                        icon="el-icon-search"
                        type="primary"
-                       @click="handleUpdate">数据同步</el-button>
+                       @click="handleUpdate">
+              数据同步
+            </el-button>
             <el-button size="small"
                        icon="el-icon-plus"
                        type="primary"
-                       @click="handleAdd">录入</el-button>
+                       @click="handleAdd">
+              录入
+            </el-button>
             <el-upload class="upload-excel"
                        ref="excel"
                        list-type="text"
@@ -55,7 +64,9 @@
                        :before-upload="beforeUpload">
               <el-button size="small"
                          icon="el-icon-plus"
-                         type="primary">文件导入上传</el-button>
+                         type="primary">
+                文件导入上传
+              </el-button>
             </el-upload>
           </el-form-item>
         </el-form>
@@ -64,7 +75,7 @@
     <div class="page-bd"
          v-if="tableData.length">
       <el-table :data="tableData"
-                style="width: 100%"
+                style="width: 100%;"
                 size="small"
                 border
                 class="table">
@@ -76,17 +87,22 @@
                          prop="gradeName"></el-table-column>
         <el-table-column label="班级"
                          prop="className"></el-table-column>
-
+        <el-table-column label="加入状态"
+                         prop="joinFlag">
+          <template slot-scope="scope">
+            <p v-if="scope.row.joinFlag">已加入</p>
+            <p v-else>未加入</p>
+          </template>
+        </el-table-column>
         <el-table-column label="卡号"
                          prop="nfcIds">
           <template slot-scope="scope">
-
             <p v-for="link in scope.row.nfcIds"
-               :key="link.nfcId">卡号{{index}}:{{link.nfcId}}</p>
-
+               :key="link.nfcId">
+              卡号{{ index }}:{{ link.nfcId }}
+            </p>
           </template>
         </el-table-column>
-
         <el-table-column label="家长"
                          prop="linkMan">
           <template slot-scope="scope">
@@ -110,17 +126,25 @@
           <template slot-scope="scope">
             <el-button size="mini"
                        type="primary"
-                       @click="handleEdit(scope.row)">编辑</el-button>
+                       @click="handleEdit(scope.row)">
+              编辑
+            </el-button>
             <el-button size="mini"
                        type="danger"
-                       @click="handleDel(scope.row)">删除</el-button>
+                       @click="handleDel(scope.row)">
+              删除
+            </el-button>
             <el-button size="mini"
                        type="danger"
-                       @click="handleAddNFC(scope.row)">绑定接送卡</el-button>
+                       @click="handleAddNFC(scope.row)">
+              绑定接送卡
+            </el-button>
             <!-- <el-button size="mini" type="danger" @click="handleNFC(scope.row)">解绑NFC</el-button> -->
             <el-button size="mini"
                        type="danger"
-                       @click="handleAddIBEACON(scope.row)">绑定无感卡</el-button>
+                       @click="handleAddIBEACON(scope.row)">
+              绑定无感卡
+            </el-button>
             <!-- <el-button size="mini" type="danger" @click="handleIBEACON(scope.row)">解绑IBEACON</el-button> -->
           </template>
         </el-table-column>
@@ -145,7 +169,9 @@
                title
                :visible.sync="dialogFormVisible">
       <span slot="title"
-            class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
+            class="dialog-title">
+        {{ isShow ? '新增' : '编辑' }}
+      </span>
       <el-form :rules="rules"
                ref="form"
                :model="form"
@@ -174,19 +200,20 @@
             <el-option v-for="item in classList"
                        :key="item.classId"
                        :label="item.className"
-                       :value="item.classId">
-            </el-option>
+                       :value="item.classId"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item>
           <el-button icon="el-icon-plus"
                      size="mini"
                      type="primary"
-                     @click="handleAddlinkMan">新增家长</el-button>
+                     @click="handleAddlinkMan">
+            新增家长
+          </el-button>
         </el-form-item>
         <!-- for -->
         <el-row :gutter="5"
-                v-for="(item,index) in form.linkMan"
+                v-for="(item, index) in form.linkMan"
                 :key="index">
           <el-col :span="8">
             <el-form-item :label="`家长手机号`"
@@ -214,8 +241,7 @@
                          icon="el-icon-delete"
                          circle
                          type="danger"
-                         @click="handleRemoveLinkMan(index)">
-              </el-button>
+                         @click="handleRemoveLinkMan(index)"></el-button>
             </el-form-item>
           </el-col>
         </el-row>
@@ -223,10 +249,14 @@
       <span slot="footer"
             class="dialog-footer">
         <el-button size="small"
-                   @click="dialogFormVisible = false">取消</el-button>
+                   @click="dialogFormVisible = false">
+          取消
+        </el-button>
         <el-button size="small"
                    type="primary"
-                   @click="submitForm('form')">确定</el-button>
+                   @click="submitForm('form')">
+          确定
+        </el-button>
       </span>
     </el-dialog>
 
@@ -277,12 +307,16 @@
         <el-form-item label="    "
                       class="btn">
           <el-button @click="handlePushNFC"
-                     type="primary">新增接送卡</el-button>
+                     type="primary">
+            新增接送卡
+          </el-button>
         </el-form-item>
         <el-form-item>
           <el-button @click="handleCancleNFC">取消</el-button>
           <el-button type="primary"
-                     @click="submitFormNFC('dynamicValidateForm')">提交</el-button>
+                     @click="submitFormNFC('dynamicValidateForm')">
+            提交
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -313,13 +347,17 @@
         </el-form-item>
         <el-form-item label="    "
                       class="btn">
-          <el-button @click="handlePushIBEACON"
-                     type="primary">新增无感卡</el-button>
+          <el-button type="primary"
+                     @click="handlePushIBEACON">
+            新增无感卡
+          </el-button>
         </el-form-item>
         <el-form-item>
           <el-button @click="handleCancleIBEACON">取消</el-button>
-          <el-button type="primary"
-                     @click="handleSubmitIBEACON('dynamicValidateForm')">提交</el-button>
+          <el-button click="handleSubmitIBEACON('dynamicValidateForm')"
+                     type="primary">
+            提交
+          </el-button>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -341,57 +379,58 @@
   </div>
 </template>
 <script>
-import service from "@/api";
-import { sex, relation } from "@/mixins";
-import pageMixins from "@/mixins/page";
-import { isPhone } from "@/utils/validator";
+import service from '@/api'
+import { sex, relation } from '@/mixins'
+import pageMixins from '@/mixins/page'
+import { isPhone } from '@/utils/validator'
 export default {
-  name: "student",
+  name: 'student',
   mixins: [sex, relation, pageMixins],
-  data() {
+  data () {
     return {
       query: {
         grade: 0,
         classId: 0,
-        studentName: "",
-        nfcId: "",
+        studentName: '',
+        nfcId: '',
         schoolId: this.$route.params.id,
+        phone: '',
       },
-      studentId: "",
+      studentId: '',
       loading: false,
-      // dialogFormVisibleNFC: false,
+      // dialogFormVisibleNFC:false,
       dialogFormVisibleAddNFC: false,
       // 添加与解绑IBEACON
       dialogFormVisibleAddIBEACON: false,
       // dialogFormVisibleDleIBEACON: false,
-      innerUrl: "",
+      innerUrl: '',
       formNFC: {
-        studentName: "",
+        studentName: '',
         nfcIds: [
           {
-            nfcId: "",
+            nfcId: '',
           },
         ],
       },
       form: {
-        studentName: "",
+        studentName: '',
         classId: null,
         sex: 1,
-        tel: "",
+        tel: '',
         linkMan: [],
       },
-      linkMan: [{ tel: "", relation: 1, patriarchId: 0 }],
+      linkMan: [{ tel: '', relation: 1, patriarchId: 0 }],
       linkmanRules: {
         tel: [
           {
             required: true,
-            message: "手机号不能为空",
-            trigger: "blur",
+            message: '手机号不能为空',
+            trigger: 'blur',
           },
           {
             required: true,
             validator: isPhone,
-            trigger: "blur",
+            trigger: 'blur',
           },
         ],
       },
@@ -399,147 +438,147 @@ export default {
         studentName: [
           {
             required: true,
-            message: "请输入学生姓名",
-            trigger: "blur",
+            message: '请输入学生姓名',
+            trigger: 'blur',
           },
         ],
         sex: [
           {
             required: true,
-            message: "选择性别",
-            trigger: "blur",
+            message: '选择性别',
+            trigger: 'blur',
           },
         ],
         classId: [
           {
             required: true,
-            message: "选择班级",
-            trigger: "blur",
+            message: '选择班级',
+            trigger: 'blur',
           },
         ],
       },
       classList: [],
       classListCheck: [],
-      index: "",
-    };
+      index: '',
+    }
   },
   methods: {
     //上传文件之前
-    async beforeUpload(file) {
-      let schoolId = this.$route.params.id; //微信端学校Id
-      let fileName = file.name.split(".");
-      const extension = fileName[fileName.length - 1] === "xls";
-      const extensions = fileName[fileName.length - 1] === "xlsx";
+    async beforeUpload (file) {
+      let schoolId = this.$route.params.id //微信端学校Id
+      let fileName = file.name.split('.')
+      const extension = fileName[fileName.length - 1] === 'xls'
+      const extensions = fileName[fileName.length - 1] === 'xlsx'
       if (!extension && !extensions) {
         this.$message({
-          message: "文件只能是xls、xlsx格式!",
-          type: "warning",
-        });
+          message: '文件只能是xls、xlsx格式!',
+          type: 'warning',
+        })
       }
       if (extension || extensions) {
         let config = {
           headers: {
-            "Content-Type": "multipart/form-data",
+            'Content-Type': 'multipart/form-data',
           },
-        };
-        let uploadForm = new FormData();
-        uploadForm.append("file", file);
-        uploadForm.append("schoolId", schoolId);
-        this.loading = true;
-        let res = await service.batchStudents(uploadForm, config);
+        }
+        let uploadForm = new FormData()
+        uploadForm.append('file', file)
+        uploadForm.append('schoolId', schoolId)
+        this.loading = true
+        let res = await service.batchStudents(uploadForm, config)
         if (res.errorCode === 0) {
           if (res.data) {
-            this.innerUrl = res.data;
-            window.location.href = this.innerUrl;
+            this.innerUrl = res.data
+            window.location.href = this.innerUrl
           } else {
-            this.$alert("导入成功", "提示", {
-              confirmButtonText: "确定",
-              type: "success",
-            });
+            this.$alert('导入成功', '提示', {
+              confirmButtonText: '确定',
+              type: 'success',
+            })
           }
-          this.queryStudent(this.query);
-          this.loading = false;
+          this.queryStudent(this.query)
+          this.loading = false
         } else {
-          this.loading = false;
+          this.loading = false
         }
       }
-      return extension || extensions;
+      return extension || extensions
     },
-    handleSearch() {
-      this.query.page = 1;
-      this.queryStudent(this.query);
+    handleSearch () {
+      this.query.page = 1
+      this.queryStudent(this.query)
     },
-    handleCurrentChange(curr) {
-      this.query.page = curr;
-      this.queryStudent(this.query);
+    handleCurrentChange (curr) {
+      this.query.page = curr
+      this.queryStudent(this.query)
     },
-    handleSizeChange(size) {
-      this.query.pageSize = size;
-      this.queryStudent(this.query);
+    handleSizeChange (size) {
+      this.query.pageSize = size
+      this.queryStudent(this.query)
     },
-    handleAddlinkMan() {
-      this.form.linkMan.push({ tel: "", relation: 1, patriarchId: 0 });
+    handleAddlinkMan () {
+      this.form.linkMan.push({ tel: '', relation: 1, patriarchId: 0 })
     },
-    handleRemoveLinkMan(index) {
-      return this.form.linkMan.splice(index, 1);
+    handleRemoveLinkMan (index) {
+      return this.form.linkMan.splice(index, 1)
     },
-    handleAdd() {
-      this.isShow = true;
-      this.dialogFormVisible = true;
+    handleAdd () {
+      this.isShow = true
+      this.dialogFormVisible = true
       this.form = {
-        linkMan: [{ tel: "", relation: 1, patriarchId: 0 }],
-      };
+        linkMan: [{ tel: '', relation: 1, patriarchId: 0 }],
+      }
     },
-    handleEdit(row) {
-      this.isShow = false;
-      this.dialogFormVisible = true;
-      this.form = Object.assign({}, row);
+    handleEdit (row) {
+      this.isShow = false
+      this.dialogFormVisible = true
+      this.form = Object.assign({}, row)
     },
-    handleDel(row) {
-      console.log(row);
-      this.$confirm(`确定删除吗?`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+    handleDel (row) {
+      console.log(row)
+      this.$confirm(`确定删除吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
         .then(() => {
-          let schoolId = this.$route.params.id;
-          this.deleteStudent(row.studentId, schoolId);
+          let schoolId = this.$route.params.id
+          this.deleteStudent(row.studentId, schoolId)
         })
         .catch((error) => {
-          return false;
-        });
+          return false
+        })
     },
 
     // 数据同步
-    handleUpdate(row) {
-      this.$confirm(`是否同步学生数据`, "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning",
+    handleUpdate (row) {
+      this.$confirm(`是否同步学生数据`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
       })
         .then(() => {
-          this.asyncData();
+          this.asyncData()
         })
         .catch((error) => {
-          return false;
-        });
+          return false
+        })
     },
 
-    async asyncData() {
-      let res = await service.terminalSync({ schoolId: this.$route.params.id });
+    async asyncData () {
+      let res = await service.terminalSync({ schoolId: this.$route.params.id })
       if (res.errorCode === 0) {
-        this.$message("刷新成功");
+        this.$message('刷新成功')
       } else {
-        this.$message(res.errorMsg);
+        this.$message(res.errorMsg)
       }
     },
 
     // 绑定NFC20191005
-    handleAddNFC(row) {
-      console.log(row);
-      this.dialogFormVisibleAddNFC = true;
-      let { classId, className, studentName, studentId, nfcIds } = row;
+    handleAddNFC (row) {
+      console.log(row)
+      this.dialogFormVisibleAddNFC = true
+      let { classId, className, studentName, studentId, nfcIds } = row
       this.formNFC = Object.assign(
         {},
         {
@@ -547,23 +586,23 @@ export default {
           className,
           studentId,
           studentName,
-          nfcIds: nfcIds.length ? nfcIds : [{ nfcId: "" }],
-        }
-      );
+          nfcIds: nfcIds.length ? nfcIds : [{ nfcId: '' }],
+        },
+      )
     },
     // 取消
-    handleCancleNFC() {
-      this.dialogFormVisibleAddNFC = false;
+    handleCancleNFC () {
+      this.dialogFormVisibleAddNFC = false
     },
     // 删除
-    handleDeleteNFC(index) {
-      this.formNFC.nfcIds.splice(index, 1);
+    handleDeleteNFC (index) {
+      this.formNFC.nfcIds.splice(index, 1)
     },
     // 添加NFC
-    handlePushNFC() {
+    handlePushNFC () {
       this.formNFC.nfcIds.push({
-        nfcId: "",
-      });
+        nfcId: '',
+      })
     },
     // 删除20191005 NFC
     // delFormNFC(index) {
@@ -588,43 +627,43 @@ export default {
     // },
 
     // 提交新增NFC20191005
-    submitFormNFC() {
-      let nfcIds = this.formNFC.nfcIds.filter((item) => item.nfcId === "");
+    submitFormNFC () {
+      let nfcIds = this.formNFC.nfcIds.filter((item) => item.nfcId === '')
       if (nfcIds.length > 0) {
         this.$message({
-          message: "请输入卡片ID号",
-          type: "warning",
-        });
+          message: '请输入卡片ID号',
+          type: 'warning',
+        })
       } else {
-        this.addNfc(this.formNFC);
+        this.addNfc(this.formNFC)
       }
     },
-    async addNfc(formNFC) {
+    async addNfc (formNFC) {
       let data = {
         studentId: this.formNFC.studentId,
         nfcIds: this.formNFC.nfcIds,
         classId: this.formNFC.classId,
-      };
+      }
       let res = await service.addNfc(data, {
-        headers: { "Content-Type": "application/json" },
-      });
+        headers: { 'Content-Type': 'application/json' },
+      })
       if (res.errorCode === 0) {
         this.$message({
-          message: "绑定成功",
-          type: "warning",
-        });
-        this.dialogFormVisibleAddNFC = false;
-        this.queryStudent(this.query);
+          message: '绑定成功',
+          type: 'warning',
+        })
+        this.dialogFormVisibleAddNFC = false
+        this.queryStudent(this.query)
       } else {
-        this.queryStudent(this.query);
+        this.queryStudent(this.query)
       }
     },
 
     // 绑定IBEACON弹框
-    handleAddIBEACON(row) {
-      console.log(row);
-      let { classId, studentId, schoolId, studentName, beaconIds } = row;
-      this.dialogFormVisibleAddIBEACON = true;
+    handleAddIBEACON (row) {
+      console.log(row)
+      let { classId, studentId, schoolId, studentName, beaconIds } = row
+      this.dialogFormVisibleAddIBEACON = true
       this.formNFC = Object.assign(
         {},
         {
@@ -632,28 +671,28 @@ export default {
           studentId,
           schoolId,
           studentName,
-          beaconIds: beaconIds.length ? beaconIds : [{ beaconId: "" }],
-        }
-      );
+          beaconIds: beaconIds.length ? beaconIds : [{ beaconId: '' }],
+        },
+      )
     },
 
     // 取消
-    handleCancleIBEACON() {
-      this.dialogFormVisibleAddNFC = false;
+    handleCancleIBEACON () {
+      this.dialogFormVisibleAddNFC = false
     },
     // 删除
-    handleDeleteIBEACON(index) {
-      this.formNFC.beaconIds.splice(index, 1);
+    handleDeleteIBEACON (index) {
+      this.formNFC.beaconIds.splice(index, 1)
     },
     // 添加IBEACON
-    handlePushIBEACON() {
+    handlePushIBEACON () {
       this.formNFC.beaconIds.push({
-        beaconId: "",
-      });
+        beaconId: '',
+      })
     },
 
     // 提交绑定IBEACON
-    handleSubmitIBEACON() {
+    handleSubmitIBEACON () {
       // let beaconNumber = this.$refs.IbeaconNumber[0].value;
       // if (beaconNumber !== "") {
       //   this.addBeacon(this.formNFC);
@@ -665,30 +704,30 @@ export default {
       // }
 
       let beaconIds = this.formNFC.beaconIds.filter(
-        (item) => item.beaconId === ""
-      );
+        (item) => item.beaconId === '',
+      )
       if (beaconIds.length > 0) {
         this.$message({
-          message: "请输入卡片ID号",
-          type: "warning",
-        });
-        this.addBeacon(this.formNFC);
+          message: '请输入卡片ID号',
+          type: 'warning',
+        })
+        this.addBeacon(this.formNFC)
       } else {
-        this.addBeacon(this.formNFC);
+        this.addBeacon(this.formNFC)
       }
     },
-    async addBeacon(formNFC) {
+    async addBeacon (formNFC) {
       let res = await service.addBeacon(formNFC, {
-        headers: { "Content-Type": "application/json" },
-      });
+        headers: { 'Content-Type': 'application/json' },
+      })
       if (res.errorCode === 0) {
         this.$message({
-          message: "绑定成功",
-          type: "warning",
-        });
-        this.dialogFormVisibleAddIBEACON = false;
+          message: '绑定成功',
+          type: 'warning',
+        })
+        this.dialogFormVisibleAddIBEACON = false
       } else {
-        this.queryStudent(this.query);
+        this.queryStudent(this.query)
       }
     },
 
@@ -743,88 +782,88 @@ export default {
     //     this.formNFC.studentNfc.splice(index, 1);
     //   }
     // },
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let schoolId = this.$route.params.id;
-          Object.assign(this.form, { schoolId });
+          let schoolId = this.$route.params.id
+          Object.assign(this.form, { schoolId })
           if (this.isShow) {
-            this.addStudent(this.form);
+            this.addStudent(this.form)
           } else {
-            this.updateStudent(this.form);
+            this.updateStudent(this.form)
           }
         }
-      });
+      })
     },
 
     //查询学生列表（微信端）
-    async queryStudent(params = {}) {
+    async queryStudent (params = {}) {
       let res = await service.queryStudent(params, {
-        headers: { "Content-Type": "application/json" },
-      });
+        headers: { 'Content-Type': 'application/json' },
+      })
       if (res.errorCode === 0) {
-        this.tableData = res.data.data;
-        this.totalCount = res.data.totalCount;
+        this.tableData = res.data.data || []
+        this.totalCount = res.data.totalCount
       }
     },
     //录入学生信息（微信端）
-    async addStudent(params = {}) {
+    async addStudent (params = {}) {
       let res = await service.addStudent(params, {
-        headers: { "Content-Type": "application/json" },
-      });
+        headers: { 'Content-Type': 'application/json' },
+      })
       if (res.errorCode === 0) {
-        this.dialogFormVisible = false;
-        this.$refs.form.resetFields();
-        this.queryStudent(this.query);
+        this.dialogFormVisible = false
+        this.$refs.form.resetFields()
+        this.queryStudent(this.query)
       } else {
-        this.$message({ message: `${res.errorMsg}`, type: "warning" });
+        this.$message({ message: `${res.errorMsg}`, type: 'warning' })
       }
     },
     //编辑学生信息（微信端）
-    async updateStudent(params) {
+    async updateStudent (params) {
       let res = await service.updateStudent(params, {
-        headers: { "Content-Type": "application/json" },
-      });
+        headers: { 'Content-Type': 'application/json' },
+      })
       if (res.errorCode === 0) {
-        this.dialogFormVisible = false;
-        this.$refs.form.resetFields();
-        this.queryStudent(this.query);
+        this.dialogFormVisible = false
+        this.$refs.form.resetFields()
+        this.queryStudent(this.query)
       }
     },
     //删除学生信息（微信端）
-    async deleteStudent(studentId, schoolId) {
+    async deleteStudent (studentId, schoolId) {
       let res = await service.deleteStudent(
         { studentId, schoolId },
         {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
       if (res.errorCode === 0) {
-        this.queryStudent(this.query);
+        this.queryStudent(this.query)
       }
     },
     //查询班级列表（微信端）
-    async querySchoolClass() {
-      let schoolId = this.$route.params.id;
+    async querySchoolClass () {
+      let schoolId = this.$route.params.id
       let res = await service.querySchoolClass(
         { schoolId },
         {
-          headers: { "Content-Type": "application/json" },
-        }
-      );
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
       if (res.errorCode === 0) {
-        this.classList = res.data;
+        this.classList = res.data
         this.classListCheck = res.data.concat([
-          { classId: 0, className: "全部" },
-        ]);
+          { classId: 0, className: '全部' },
+        ])
       }
     },
   },
-  activated() {
-    this.queryStudent(this.query);
-    this.querySchoolClass();
+  activated () {
+    this.queryStudent(this.query)
+    this.querySchoolClass()
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .upload-excel {

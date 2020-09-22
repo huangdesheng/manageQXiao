@@ -36,3 +36,9 @@ export function prizeStatistics(params, config) {
 export function xqClassStatistics(params, config) {
   return ax.post('/stats/index', params, config).then(res => res.data).catch(err => console.log(err))
 }
+
+
+// 小Q班级分析
+export function deleteData(params, config) {
+  return ax.post('/user/delete', params, config).then(res => res.data).catch(err => console.log(err))
+}
