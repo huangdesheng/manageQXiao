@@ -262,7 +262,6 @@ export default {
         apMac: row.apMac,
         schoolId: row.schoolId
       };
-
       this.deviceNo = row.deviceNo;
       this.deviceMac = row.apMac;
       this.queryApInfo(data);
