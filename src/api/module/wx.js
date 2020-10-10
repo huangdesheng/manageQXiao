@@ -80,3 +80,11 @@ export function queryPunchList(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+
+// 年级列表 1:中小学 2:幼儿园 3:培训机构 4:其他
+export function queryGradeList(params, config) {
+  return ax.post(`/action/mod-xiaojiao/weixin/class/grade/${params}`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}

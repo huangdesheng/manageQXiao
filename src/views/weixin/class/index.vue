@@ -67,53 +67,52 @@
                        page-ft">
     </div> -->
     <!-- 新增 or 编辑 -->
-    <el-dialog top="40px"
-               title
-               :visible.sync="dialogFormVisible">
-      <span slot="title"
-            class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
-      <el-form ref="form"
-               :model="form"
-               status-icon
-               size="small"
-               :label-width="formLabelWidth">
-        <el-form-item label="班级头像"
-                      class="flex"
-                      v-if="schoolType === 2">
+    <el-dialog top="40px" title :visible.sync="dialogFormVisible"> 
+      <span slot="title" class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
+      <el-form ref="form" :model="form"  status-icon  size="small" :label-width="formLabelWidth">
+        <el-form-item label="班级头像"  class="flex" v-if="schoolType === 2">         
           <div class="photo">
             <div v-if="form.logo == '' || form.logo == null">
-
               <i class="el-icon-plus"></i>
             </div>
-            <div v-else
-                 style="border:none"
-                 class="img">
-
-              <img alt
-                   :style="{backgroundImage: `url(${form.logo})`}"
-                   class="photoImg" />
+            <div v-else style="border:none" class="img">
+              <img alt :style="{backgroundImage: `url(${form.logo})`}" class="photoImg" />
             </div>
-            <input type="file"
-                   @change="upploadImg($event)" />
+            <input type="file"  @change="upploadImg($event)" />
           </div>
         </el-form-item>
-        <el-form-item label="年级"
-                      prop="grade"
-                      :rules="[{ required: true, message: '选择年级', trigger: 'blur' }]">
-          <el-select v-model="form.grade"
-                     placeholder="选择年级">
-            <el-option v-for="item in gradeList"
-                       :key="item.gradeId"
-                       :label="item.gradeName"
-                       :value="item.gradeId"></el-option>
+        <el-form-item label="班级类型" prop="classType" :rules="[{ required: true, message: '选择班级类型', trigger: 'blur' }]">
+          <el-select v-model="form.classType"  placeholder="请选择对应的班级类型"  @change="handleSelectGrade">
+            <el-option v-for="item in classType"
+                       :key="item.classtype"
+                       :label="item.text"
+                       :value="item.classtype"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="班级名称"
-                      prop="className"
-                      :rules="[ { required: true, message: '请输入班级名称', trigger: 'blur' }]">
-          <el-input v-model="form.className"
-                    placeholder="请输入班级名称"></el-input>
-        </el-form-item>
+        <template v-if="form.classType">
+          <el-form-item label="年级" prop="grade" :rules="[{ required: true, message: '选择年级', trigger: 'blur' }]">
+            <el-select v-model="form.grade"  placeholder="选择年级">
+              <el-option v-for="item in gradeList"
+                        :key="item.value"
+                        :label="item.text"
+                        :value="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="班级号" v-if="form.classType === 1">
+            <el-select v-model="form.classNo"  placeholder="请选择对应班级">
+              <el-option v-for="item in classCodeList"
+                        :key="item.value"
+                        :label="item.text"
+                        :value="item.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="班级名称"
+                        prop="className"
+                        :rules="[ { required: true, message: '请输入班级名称', trigger: 'blur' }]" v-else>
+            <el-input v-model="form.className"
+                      placeholder="请输入班级名称"></el-input>
+          </el-form-item>
+        </template>
         <el-form-item label="班级简介"
                       v-if="schoolType === 2"
                       prop="intro"
@@ -137,9 +136,10 @@
 <script>
 import service from "@/api";
 import pageMixins from "@/mixins/page";
+import { classTypeList, class_code } from "@/mixins/index.js"
 export default {
   name: "class",
-  mixins: [pageMixins],
+  mixins: [ pageMixins, classTypeList, class_code ],
   data() {
     return {
       schoolType: this.$route.query.schoolType,
@@ -153,12 +153,15 @@ export default {
         grade: null,
         logo: "",
         intro: "",
+        classType:'',
+        classNo:''
       },
       logo: "",
       gradeList: [],
     };
   },
   methods: {
+    // 班级查询
     handleSearch() {
       this.queryClasses(this.query);
     },
@@ -173,6 +176,8 @@ export default {
     handleEdit(row) {
       this.isShow = false;
       this.dialogFormVisible = true;
+      console.log(row)
+      // let {}
       this.form = Object.assign({}, row);
     },
     handleDel(row) {
@@ -218,9 +223,22 @@ export default {
 
     //表单提交
     submitForm(formName) {
+      console.log(this.form)
       if (this.form.logo == "" && this.schoolType === 2) {
         this.$message("请上传班级头像");
         return false;
+      }
+      let {classNo, className, classType} = this.form
+      if(classType === 1) {
+        if(classNo === '' || classNo === null || classNo === 0) {
+          this.$message("请选择班级号");
+          return false;
+        }
+      }else{
+        if(className === '' || className === null) {
+          this.$message("请输入班级名称");
+          return false;
+        }
       }
       this.$refs[formName].validate((valid) => {
         if (valid) {
@@ -251,8 +269,8 @@ export default {
       });
       if (res.errorCode === 0) {
         this.dialogFormVisible = false;
-        this.$refs.form.resetFields();
         this.queryClasses(this.query);
+        // this.$refs.form.resetFields();
       }
     },
     //编辑班级信息（微信端）
@@ -261,7 +279,7 @@ export default {
         headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
-        this.$refs.form.resetFields();
+        // this.$refs.form.resetFields();
         this.dialogFormVisible = false;
         this.queryClasses(this.query);
       }
@@ -279,19 +297,24 @@ export default {
       }
     },
     //年级查询
-    async queryGrade(params = {}) {
-      let res = await service.queryGrade(params, {
+    handleSelectGrade(params) {
+      this.$set(this.form, 'grade', null)
+      this.$set(this.form, 'className', null)
+      this.$set(this.form, 'classNo', null)
+      this.queryGradeList(params)
+    },
+
+    async queryGradeList(params) {
+      let res = await service.queryGradeList(params, {
         headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
         this.gradeList = res.data;
       }
     },
-
     async upploadImg(img) {
       var fileLength = Array.from(img.target.files);
       var formData = new FormData();
-
       for (var i = 0; i < fileLength.length; i++) {
         var file = fileLength[i];
         formData.append("files", file);
@@ -303,11 +326,7 @@ export default {
       };
       let res = await service.filesUpload(formData, config);
       if (res.errorCode === 0) {
-        // this.form.logo = res.data[0].url;
         this.$set(this.form, "logo", res.data[0].url);
-        // this.logo = res.data[0].url;
-        // console.log(this.logo)
-        // console.log(this.form.logo)
       } else if (res.errorCode === 1) {
         this.$message(res.errorMsg);
       }
@@ -315,7 +334,7 @@ export default {
   },
   activated() {
     this.queryClasses(this.query);
-    this.queryGrade();
+    // this.queryGrade();
   },
 };
 </script>

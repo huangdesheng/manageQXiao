@@ -389,3 +389,96 @@ export const classType = {
     }
   }
 }
+
+export const classTypeList = {
+  data() {
+    return {
+      classType: [{
+          text: "中小学",
+          classtype: 1
+        },
+        {
+          text: "幼儿园",
+          classtype: 2
+        },
+        {
+          text: "培训机构",
+          classtype: 3
+        },
+        {
+          text: "其他",
+          classtype: 4
+        }
+      ]
+    }
+  }
+}
+
+
+export const class_code = {
+  data() {
+    return {
+      classCodeList: [{
+          text: "1班",
+          value: 1
+        },
+        {
+          text: "2班",
+          value: 2
+        },
+        {
+          text: "3班",
+          value: 3
+        },
+        {
+          text: "4班",
+          value: 4
+        },
+        {
+          text: "5班",
+          value: 5
+        },
+        {
+          text: "6班",
+          value: 6
+        },
+        {
+          text: "7班",
+          value: 7
+        },
+        {
+          text: "8班",
+          value: 8
+        },
+        {
+          text: "9班",
+          value: 9
+        },
+        {
+          text: "10班",
+          value: 10
+        },
+        {
+          text: "11班",
+          value: 11
+        },
+        {
+          text: "12班",
+          value: 12
+        },
+        {
+          text: "13班",
+          value: 13
+        },
+        {
+          text: "14班",
+          value: 14
+        },
+        {
+          text: "15班",
+          value: 15
+        },
+      ]
+    }
+  }
+}
