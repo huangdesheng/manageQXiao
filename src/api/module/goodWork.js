@@ -29,6 +29,14 @@ export function goodVote(params, config) {
     .catch(e => console.log(e));
 }
 
+// 删除作品
+export function deleteWords(params, config) {
+  return ax.post(`/works/delete/${params}`, params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+
 // 审核
 export function auditWork(params, config) {
   return ax.post(`/works/audit`, params, config)
@@ -48,6 +56,23 @@ export function eventTypes(config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+
+// 获取审核状态
+export function getAutoStatus(config) {
+  return ax.get(`/works/auto`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+export function changeCheckStatus(params, config) {
+  return ax.post(`/works/auto`, params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+
+
 
 // // 
 // export function allList(params, config) {

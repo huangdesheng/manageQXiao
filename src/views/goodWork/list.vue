@@ -39,7 +39,7 @@
         <el-table-column label="作品标签" prop="tagName"></el-table-column>
         <el-table-column label="作品标题" width="200">
           <template slot-scope="scope">
-            <span @click="handleUrl(scope.row.url)" class="on">{{scope.row.title}}</span>
+            <el-button size="mini" type="text" @click="handleUrl(scope.row.url)">{{scope.row.title}}</el-button>
           </template>
         </el-table-column>
         <!-- <el-table-column label="作品标题" prop="title"></el-table-column> -->
@@ -52,16 +52,20 @@
           <template slot-scope="scope">
             <!-- <span @click="handleCheck(scope.row)" class="on">通过</span>
             <template slot-scope="scope">-->
-            <span v-if="scope.row.auditStatus === 0" class="on" @click="handleCheck(scope.row)">未审核</span>
-            <span v-if="scope.row.auditStatus === 1" class="on" @click="handleCheck(scope.row)">通过</span>
-            <span v-if="scope.row.auditStatus === 2" class="off" @click="handleCheck(scope.row)">拒绝</span>
+            <el-button size="mini" type="text" v-if="scope.row.auditStatus === 0"  @click="handleCheck(scope.row)">未审核</el-button>
+            <el-button size="mini" type="text" v-if="scope.row.auditStatus === 1"  @click="handleCheck(scope.row)">通过</el-button>
+            <el-button size="mini" type="text" v-if="scope.row.auditStatus === 2" color="red" @click="handleCheck(scope.row)">拒绝</el-button>
             <!-- </template> -->
           </template>
         </el-table-column>
         <el-table-column label="操作" width="200">
           <template slot-scope="scope">
-            <el-button size="mini" type="primary" @click="handleVote(scope.row.id)">投票</el-button>
+            <el-button size="mini" type="text" @click="handleVote(scope.row.id)">投票</el-button>
+            <el-button size="mini" type="text" @click="handleDelete(scope.row.id)" style="color:red">删除</el-button>
           </template>
+           <!-- <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="handleDelete(scope.row.id)" color="red">删除</el-button>
+          </template> -->
         </el-table-column>
       </el-table>
     </div>
@@ -174,6 +178,39 @@ export default {
       this.dialogFormVisible = true;
       this.query.url = url;
     },
+
+    //删除系统默认行为
+    async goodVote(id) {
+      let res = await service.goodVote(id, {
+        headers: { "Content-Type": "application/json" }
+      });
+      if (res.errorCode === 0) {
+        this.$message({ message: `投票成功`, type: "success" });
+        this.workList(this.query);
+      } else {
+        this.$message({ message: `${res.errorMsg}` });
+      }
+    },
+    
+    // 删除作品
+    async deleteWords(id) {
+      let res = await service.deleteWords(id)
+      if(res.errorCode === 0) {
+        this.workList(this.query);
+      }
+    },
+
+    handleDelete(id) {
+      this.$confirm(`确定要删除该作品吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      }) .then(() => {
+          this.deleteWords(id);
+      }).catch(error => {
+        
+      });
+    },
     // handleRemoveRules(index) {
     //   return this.form.rules.splice(index, 1);
     // },
@@ -223,18 +260,7 @@ export default {
         this.thinkList(this.query);
       }
     },
-    //删除系统默认行为
-    async goodVote(id) {
-      let res = await service.goodVote(id, {
-        headers: { "Content-Type": "application/json" }
-      });
-      if (res.errorCode === 0) {
-        this.$message({ message: `投票成功`, type: "success" });
-        this.workList(this.query);
-      } else {
-        this.$message({ message: `${res.errorMsg}` });
-      }
-    },
+    
     //新增系统默认行为
     async addLogic(params = {}) {
       console.log(params);

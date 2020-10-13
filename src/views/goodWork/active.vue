@@ -48,6 +48,19 @@
             </el-select>
           </el-form-item>
         </el-form>
+
+        <div class="auto_check">
+          <h2>审核方式</h2>
+          <div>
+            <el-switch
+              @change="handleCheckStatus"
+              style="display: block"
+              v-model="checkStatus"
+              inactive-text="自动审核">
+            </el-switch>
+          </div>
+         
+        </div>
       </div>
     </div>
   </div>
@@ -58,6 +71,7 @@ export default {
   name: "behavior",
   data() {
     return {
+      checkStatus:false,
       netQuery: {
         periodDay: "7",
         periodType: 1
@@ -90,6 +104,8 @@ export default {
         this.eventTypes();
       }
     },
+
+    // 选择时间周期
     changeTime(value) {
       if (value === 1) {
         this.eventTime(this.netQuery);
@@ -109,10 +125,24 @@ export default {
         this.expertQuery.periodDay = `${res.data[1].periodDay}`;
         this.platformQuery.periodDay = `${res.data[2].periodDay}`;
       }
-    }
+    },
+    // 获取审核状态
+    async getAutoStatus() {
+      let res = await service.getAutoStatus()
+      if(res.errorCode === 0) {
+        this.changeCheckStatus = res.data.active
+      }
+    },
+    async handleCheckStatus() {
+      let res = await service.changeCheckStatus({active:this.changeCheckStatus},{
+        headers: { "Content-Type": "application/json" }
+      })
+    },
+    
   },
   mounted() {
     this.eventTypes();
+    this.getAutoStatus()
   }
 };
 </script>
@@ -124,4 +154,39 @@ export default {
 .off {
   color: red;
 }
+h2{
+  display: flex;
+  align-items: center;
+}
+h2::before {
+  content:'';
+  width:3px;
+  height:15px;
+  background:#409EFF;
+  margin-right:10px;
+  border-radius:50px;
+}
+
+.auto_check{
+  margin-top:40px;
+  >div{
+     width:200px;
+     
+     box-shadow: 0px -3px 6px rgba(191, 191, 191, 0.25);
+     padding:20px;
+     margin-top:20px;
+     background:#fff;
+     font-size:16px;
+     color:#333;
+     border-radius:4px;
+  }
+}
+
+.auto_check /deep/ .el-switch__label *{
+  font-size:17px;
+}
+
+ .auto_check /deep/ .el-switch__label.is-active{
+   color:#333
+ }
 </style>
