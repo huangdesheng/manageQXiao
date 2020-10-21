@@ -134,7 +134,7 @@ export default {
       }
     },
     async handleCheckStatus() {
-      let res = await service.changeCheckStatus({active:this.changeCheckStatus},{
+      let res = await service.changeCheckStatus({active:this.checkStatus},{
         headers: { "Content-Type": "application/json" }
       })
     },

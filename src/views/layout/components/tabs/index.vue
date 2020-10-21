@@ -51,13 +51,11 @@ export default {
 <style lang="less" scoped>
 .tabs-contaier {
   position: fixed;
-  //left: 200px;
   top: 60px;
   z-index: 990;
   width: 100%;
   display: flex;
   background-color: #fff;
-  // box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1);
   border-bottom: 1px solid #ebf1f6;
   a {
     display: flex;

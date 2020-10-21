@@ -21,10 +21,16 @@ export const constantRouterMap = [{
       }
     }]
   },
+  // {
+  //   path: "*",
+  //   component: layout,
+  //   redirect: "/home"
+  // },
+
   {
-    path: "*",
-    component: layout,
-    redirect: "/home"
+    path:'/404',
+    name:'404',
+    component:() => import('@/views/404')
   }
 ];
 

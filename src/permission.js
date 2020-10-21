@@ -25,11 +25,12 @@ router.beforeEach((to, from, next) => {
       Nprogress.done();
     } else {
       if (store.getters.menu.length === 0) {
-        console.log(111111)
+        // console.log(111111)
         store.dispatch("comm/qxregion");
         //获取权限菜单
         store.dispatch("qxuser/querySystemMenus").then(res => {
-          let routeData = res.data.router; //返回的权限路由数据
+          let routeData = res.data.router.concat({path:'*', name:'404',redirect:'/404',hidden:true}); //返回的权限路由数据
+          // let routeData = res.data.router; //返回的权限路由数据
           let routeLocal = filterAsyncRouter(routeData);
           router.addRoutes(routeLocal);
         });
