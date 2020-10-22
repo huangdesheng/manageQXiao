@@ -1,5 +1,23 @@
 <template>
   <div class="page">
+    <el-dialog title="收货地址" :visible.sync="dialogTableVisible"  class="table-item">
+      <el-table :data="gridData" border>
+        <el-table-column property="name" label="作息名称"></el-table-column>
+        <el-table-column label="时间范围">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" class="on">{{scope.row.startTime}}</el-button> 
+            <span class="to">-</span>
+            <el-button size="mini" type="text" class="on">{{scope.row.endTime}}</el-button>   
+          </template>
+        </el-table-column>
+        <el-table-column label="正常课程">
+          <template slot-scope="scope">
+           <el-checkbox v-model="scope.row.formal" :disabled="true" v-if="scope.row.formal"></el-checkbox>  
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-dialog>
+
     <header class="page-hd" v-if="listLength < 2">
         <el-form class="demo-form-inline" :inline="true" size="small">
           <el-form-item>
@@ -13,8 +31,8 @@
         <el-table-column label="序号" type="index"></el-table-column>          
         <el-table-column label="备注" prop="term">
           <template slot-scope="scope">
-            <el-button size="mini" type="text" v-if="scope.row.term === 1">第一学期作息表</el-button> 
-            <el-button size="mini" type="text" v-if="scope.row.term === 2">第二学期作息表</el-button>   
+            <el-button size="mini" type="text" v-if="scope.row.term === 1" @click="rentDetails(scope.row)">第一学期作息表</el-button> 
+            <el-button size="mini" type="text" v-if="scope.row.term === 2" @click="rentDetails(scope.row)">第二学期作息表</el-button>   
           </template>
         </el-table-column>
         <el-table-column label="作息时间段">
@@ -34,7 +52,7 @@
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="handleUser(scope.row)" v-if="!scope.row.active">使用</el-button> 
             <el-button size="mini" type="text" @click="handleEdit(scope.row)">编辑</el-button>   
-            <el-button size="mini" type="danger" @click="handleDelete(scope.row)">删除</el-button>     
+            <el-button size="mini" type="danger" @click="handleDelete(scope.row)" v-if="!scope.row.active">删除</el-button>     
           </template>
         </el-table-column>
       </el-table>
@@ -48,6 +66,8 @@ export default {
   data() {
     return {
       tableData: [], //表格数据
+      gridData:[],
+      dialogTableVisible:false
     }
   },
 
@@ -71,6 +91,16 @@ export default {
         this.tableData = []
       }
     },
+    
+    async rentDetails(item) {
+      let { tempId, schoolId } = item
+      let res = await service.rentDetails({tempId,schoolId})
+      if(res.errorCode === 0) {
+        this.gridData = res.data
+        this.dialogTableVisible = true
+      }
+    },
+
     handleAdd() {
       let state
       if(this.tableData.length) {
@@ -158,4 +188,10 @@ export default {
   .el-table /deep/ th{
     text-align: center;
   } 
+
+  .table-item /deep/ .el-checkbox__inner {
+    background: #409EFF !important;
+    border-color:#409EFF !important;
+    color:#fff;
+  }
 </style>

@@ -53,7 +53,7 @@
               </div>
 
               <div>
-                <el-checkbox v-model="item.checked"></el-checkbox>
+                <el-checkbox v-model="item.formal"></el-checkbox>
               </div>
               <div class="end"><span @click="handleDelete(index)" v-if="list.length > 1">删除</span></div>
             </li>
@@ -81,7 +81,11 @@ export default {
         {
           value:1,
           label:'第一学期作息表'
-        }
+        },
+         {
+          value:2,
+          label:'第二学期作息表'
+        },
       ],
 
       list:[
@@ -96,7 +100,7 @@ export default {
   },
 
 
-  mounted() {
+  activated() {
     this.rentDetails()
   },
 

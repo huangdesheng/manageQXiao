@@ -158,7 +158,7 @@ export default {
       }
         ]
       }else if(res.errorCode === 902){
-        this.$message('填写课表名称或时间')
+        this.$message(res.errorMsg)
       }
     }
   }
@@ -232,7 +232,8 @@ export default {
   }
 
   .input /deep/ .el-input__inner {
-    border:none
+    border:none;
+    font-size:16px;
   }
   .to{
     margin:0px 10px;
