@@ -17,11 +17,21 @@ export function punchTable(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// 体温导出
 export function punchTemperature(params, config) {
   return ax.post('/action/mod-xiaojiao/weixin/punch/temperature', params, config)
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// 请假导出
+export function punchLeave(params, config) {
+  return ax.post('/action/mod-xiaojiao/weixin/punch/leave', params, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
 
 
 

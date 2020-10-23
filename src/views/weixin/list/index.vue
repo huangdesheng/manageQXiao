@@ -28,7 +28,7 @@
             <span v-else-if="scope.row.schoolType === 1">模拟班级</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="900">
+        <el-table-column label="操作" width="1000">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)" v-if="schoolId === 0">编辑</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 1,scope.row.schoolType)">班级管理</el-button>
@@ -39,6 +39,7 @@
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 6)">课表管理</el-button>
             <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId, 7)">考勤导出</el-button>
             <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId,8)">体温导出</el-button>
+            <el-button size="mini" type="primary" @click="punchTableBtn(scope.row.schoolId,9)">请假导出</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -330,10 +331,15 @@ export default {
         res = await service.punchTable(params, {
           headers: { "Content-Type": "application/json" }
         });
-      } else {
+      } else if(this.k_t_index === 8) {
         res = await service.punchTemperature(params, {
           headers: { "Content-Type": "application/json" }
         });
+      }else if(this.k_t_index === 9) {
+        res = await service.punchLeave(params, {
+          headers: { "Content-Type": "application/json" }
+        });
+        
       }
 
       if (res.errorCode === 0) {
