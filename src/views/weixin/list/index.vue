@@ -28,7 +28,7 @@
             <span v-else-if="scope.row.schoolType === 1">模拟班级</span>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="1000">
+        <el-table-column label="操作" width="550">
           <template slot-scope="scope">
             <el-button size="mini" type="primary" @click="handleEdit(scope.row)" v-if="schoolId === 0">编辑</el-button>
             <el-button size="mini" type="primary" @click="handleOpen(scope.row.schoolId, 1,scope.row.schoolType)">班级管理</el-button>
@@ -357,6 +357,7 @@ export default {
     },
     handleSizeChange(size) {
       this.query.pageSize = size;
+      this.querySchoolList(this.query);
     },
     handleSearch() {
       this.querySchoolList(this.query);
@@ -507,6 +508,15 @@ export default {
   }
 }
 
+
+.page-bd /deep/ .el-button--mini{
+    padding: 0;
+    width: 60px;
+    height: 30px;
+    margin-top: 10px;
+    margin-left:0;
+    margin-right:10px;
+}
 
 
 </style>

@@ -482,3 +482,27 @@ export const class_code = {
     }
   }
 }
+
+
+const statusLists  = Object.freeze([
+    {
+      id:0,
+      name:'全部'
+    },
+    {
+      id:1,
+      name:'已发布'
+    },
+    {
+      id:2,
+      name:'热度榜'
+    },
+])
+
+export const statusList = {
+  data() {
+    return {
+      statusList:statusLists
+    }
+  }
+}

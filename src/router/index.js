@@ -21,17 +21,17 @@ export const constantRouterMap = [{
       }
     }]
   },
-  {
-    path: "*",
-    component: layout,
-    redirect: "/home"
-  },
-
   // {
-  //   path:'/404',
-  //   name:'404',
-  //   component:() => import('@/views/404')
-  // }
+  //   path: "*",
+  //   component: layout,
+  //   redirect: "/home"
+  // },
+
+  {
+    path:'/404',
+    name:'404',
+    component:() => import('@/views/404')
+  }
 ];
 
 export default new Router({
