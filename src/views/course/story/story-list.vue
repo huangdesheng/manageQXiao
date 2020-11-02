@@ -156,6 +156,7 @@ export default {
           storyId:this.$route.params.id,
           title: "",
           contentUrl:"",
+          duration:''
       },
       totalCount:0
     };
@@ -170,6 +171,7 @@ export default {
         storyId:this.$route.params.id,
         title: "",
         contentUrl:'',
+        duration:''
       }
       this.dialogFormVisible = true
     },
@@ -235,6 +237,7 @@ export default {
         if (res.data.errorCode === 0) {
           // this.form.videoImg = res.data.data.screenShotURL;
           this.form.contentUrl = res.data.data.audioUrl;
+          this.form.duration = res.data.data.duration
           this.progressValue = 100
           this.videoStatus = false
         }

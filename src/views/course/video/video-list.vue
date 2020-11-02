@@ -122,7 +122,7 @@
     <!-- 查看详情 -->
     <el-dialog :visible.sync="dialogFormVisibleCheck" custom-class="check" @closed="handleClosed">
       <div>
-        <video :src="form.videoUrl" controls autoplay style="width= 100%; height=100%; object-fit: fill" id="video"></video>
+        <video :src="form.videoUrl" controls autoplay style="width= 100%; height=100%; object-fit: fill" id="contain"></video>
       </div>
     </el-dialog>
   </div>
@@ -154,7 +154,10 @@ export default {
           courseId:this.$route.params.id,
           title: "",
           videoUrl:'',
-          videoImg:''
+          videoImg:'',
+          duration:'',
+          height:'',
+          width:''
       },
       totalCount:0
     };
@@ -169,7 +172,10 @@ export default {
         courseId:this.$route.params.id,
         title: "",
         videoUrl:'',
-        videoImg:''
+        videoImg:'',
+        duration:'',
+        height:'',
+        width:''
       }
       this.dialogFormVisible = true
     },
@@ -210,6 +216,7 @@ export default {
     // },
 
     async uploadVideo(file) {
+      console.log(file)
       this.percentage = 0
       this.form.videoImg =''
       this.form.videoUrl = ''
@@ -236,6 +243,9 @@ export default {
         if (res.data.errorCode === 0) {
           this.form.videoImg = res.data.data.screenShotURL;
           this.form.videoUrl = res.data.data.videoURL;
+          this.form.duration = res.data.data.duration
+          this.form.height = res.data.data.height
+          this.form.width = res.data.data.width
           this.progressValue = 100
           this.videoStatus = false
         }
@@ -429,6 +439,7 @@ export default {
     // width: 1200px;
     height:400px;
     margin:0 auto;
+    overflow:auto;
   }
 }
 

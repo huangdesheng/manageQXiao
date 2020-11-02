@@ -243,7 +243,6 @@ export default {
     
     // 编辑课程
     async handleEdit(id, status) {
-    
       let res = await service.courseDetails(id)
       if(res.errorCode === 0) {
         this.form = res.data
@@ -335,9 +334,6 @@ export default {
         this.totalCount = res.data.totalCount;
       }
     },
-
-    
-  
   },
   activated() {
     this.queryGradeList(this.query)
