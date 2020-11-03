@@ -50,7 +50,7 @@
           </template>
         </el-table-column>
         <el-table-column label="热度榜" align="center">
-          <template slot-scope="scope">
+          <template slot-scope="scope" v-if="scope.row.status === 1">
             <el-button size="mini" type="text" v-if="scope.row.recommend === 1" @click="handleRecommend(scope.row.id)">取消</el-button>
             <el-button size="mini" type="text" v-else-if="scope.row.recommend === 0" @click="handleRecommend(scope.row.id)">推荐</el-button>
           </template>
@@ -216,40 +216,42 @@ export default {
     // },
 
     async uploadVideo(file) {
-      console.log(file)
-      this.percentage = 0
-      this.form.videoImg =''
-      this.form.videoUrl = ''
-      var formData = new FormData(); //构造一个 FormData，把后台需要发送的参数添加
-      // if (file) {
-        formData.append("file", file.target.files[0]); //接口需要传递的参数
-      // }
-      axios({
-        method: "post",
-        url: "https://video.qxiao.net/api/upload",
-        data: formData,
-        headers: {
-          "Content-Type": "multipart/form-data"
-        },
-        onUploadProgress: progressEvent => {
-          this.videoStatus = true
-          let complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
-          console.log(complete)
-          if(complete>2){
-            this.percentage = complete-5
+
+      if(file.target.files.length){
+        this.percentage = 0
+        this.form.videoImg =''
+        this.form.videoUrl = ''
+        var formData = new FormData(); //构造一个 FormData，把后台需要发送的参数添加
+        // if (file) {
+          formData.append("file", file.target.files[0]); //接口需要传递的参数
+        // }
+        axios({
+          method: "post",
+          url: "https://video.qxiao.net/api/upload",
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          },
+          onUploadProgress: progressEvent => {
+            this.videoStatus = true
+            let complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
+            console.log(complete)
+            if(complete>2){
+              this.percentage = complete-5
+            }
+          },
+        }).then(res => {
+          if (res.data.errorCode === 0) {
+            this.form.videoImg = res.data.data.screenShotURL;
+            this.form.videoUrl = res.data.data.videoURL;
+            this.form.duration = res.data.data.duration
+            this.form.height = res.data.data.height
+            this.form.width = res.data.data.width
+            this.progressValue = 100
+            this.videoStatus = false
           }
-        },
-      }).then(res => {
-        if (res.data.errorCode === 0) {
-          this.form.videoImg = res.data.data.screenShotURL;
-          this.form.videoUrl = res.data.data.videoURL;
-          this.form.duration = res.data.data.duration
-          this.form.height = res.data.data.height
-          this.form.width = res.data.data.width
-          this.progressValue = 100
-          this.videoStatus = false
-        }
-      });
+        });
+      }
     },
 
 
@@ -295,8 +297,24 @@ export default {
       }
     },
 
+    handleDelete(id) {
+      let that = this
+      this.$confirm(`确定删除吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.programDelete(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
+
     // 删除课程
-    async handleDelete(id) {
+    async programDelete(id) {
       let res = await service.programDelete({
         id
       },{

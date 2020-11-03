@@ -33,7 +33,7 @@
          
         </el-table-column>
         <el-table-column label="推荐首页" align="center">
-          <template slot-scope="scope">
+          <template slot-scope="scope" v-if="scope.row.status === 1">
             <el-button size="mini" type="text" v-if="scope.row.recommend === 1" @click="handleRecommend(scope.row.id)">取消</el-button>
             <el-button size="mini" type="text" v-else-if="scope.row.recommend === 0" @click="handleRecommend(scope.row.id)">推荐</el-button>
           </template>
@@ -93,7 +93,7 @@
         </el-form-item>
         <el-form-item label="年级选择" :label-width="formLabelWidth">
           <el-select v-model="form.grades" :multiple="true">
-            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+            <el-option v-for="(item,index) in gradeList" :key="item.value" :label="item.text" :value="item.value" :disabled="index === gradeList.length-1"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -255,8 +255,23 @@ export default {
       }
     },
 
+    handleDeleteCourse(id) {
+      let that = this
+      this.$confirm(`确定删除吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.deleteCourse(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
     // 删除课程
-    async handleDeleteCourse(id) {
+    async deleteCourse(id) {
       let res = await service.deleteCourse({
         id
       },{
@@ -321,7 +336,7 @@ export default {
         headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
-        this.gradeList = res.data;
+        this.gradeList = res.data.concat([{text:'',value:''}])
       }
     },
 

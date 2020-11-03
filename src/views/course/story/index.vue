@@ -33,7 +33,7 @@
          
         </el-table-column>
         <el-table-column label="推荐首页" align="center">
-          <template slot-scope="scope">
+          <template slot-scope="scope" v-if="scope.row.status === 1">
             <el-button size="mini" type="text" v-if="scope.row.recommend === 1" @click="handleRecommend(scope.row.id)">取消</el-button>
             <el-button size="mini" type="text" v-else-if="scope.row.recommend === 0" @click="handleRecommend(scope.row.id)">推荐</el-button>
           </template>
@@ -92,8 +92,8 @@
           <el-button type="primary" @click="handleAddType">新增标签</el-button>
         </el-form-item>
         <el-form-item label="年级选择" :label-width="formLabelWidth">
-          <el-select v-model="form.grades" :multiple="true">
-            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+          <el-select v-model="form.grades" multiple>
+            <el-option v-for="(item,index) in gradeList" :key="item.value" :label="item.text" :value="item.value" :disabled="index === gradeList.length-1"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -159,7 +159,6 @@ export default {
       query: {
         pageSize: 20,
         pageNum: 1,
-        
       },
       dialogFormVisible:false,
       dialogFormVisibleCheck:false,
@@ -167,6 +166,7 @@ export default {
       formLabelWidth: '120px',
       gradeList:[],
       title:'',
+      value:[],
       form:{
         	cover: "",
           grades: [],
@@ -186,8 +186,8 @@ export default {
       this.title = '新增课程'
       this.form = {
         	cover: "",
-          grades: [],
           id: null,
+          grades:[],
           intro: "",
           tags: [
             { value: "" }
@@ -195,6 +195,7 @@ export default {
           title: ""
       }
       this.dialogFormVisible = true
+      // this.$set(this.form, grades, [])
     },
     // 上传图片
     async uploadImg(img, index) {
@@ -208,7 +209,7 @@ export default {
       };
       let res = await service.filesUpload(formData, config);
       if (res.errorCode === 0) {
-          this.form.cover = res.data[0].url;
+        this.form.cover = res.data[0].url;
       }
     },
     // 新增标签
@@ -217,6 +218,10 @@ export default {
         value:""
       })
     },
+    // change() {
+
+    //   this.$forceUpdate()
+    // },
     // 删除标签
     handleDelete(index) {
       this.form.tags.splice(index, 1)
@@ -229,7 +234,6 @@ export default {
         this.$message('请填写完整信息内容')
         return false
       }
-      console.log(this.form)
       let res = await service.addStory(this.form,{
         headers: {
          "Content-Type": "application/json"
@@ -256,8 +260,23 @@ export default {
       }
     },
 
+    handleDeleteStory(id) {
+      let that = this
+      this.$confirm(`确定删除吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.deleteStory(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
     // 删除课程
-    async handleDeleteStory(id) {
+    async deleteStory(id) {
       let res = await service.deleteStory({
         id
       },{
@@ -316,13 +335,19 @@ export default {
       this.query.pageSize = size;
       this.storyList(this.query)
     },
+
+    // handleSelectGrade() {
+    //   this.$set(this.form, grades, [])
+    //   this.queryGradeList()
+    // },
     // 年级查询
     async queryGradeList() {
       let res = await service.queryGradeList(4, {
         headers: { "Content-Type": "application/json" },
       });
       if (res.errorCode === 0) {
-        this.gradeList = res.data;
+       this.gradeList = res.data.concat([{text:'',value:''}])
+      //  console.log(this.gradeList)
       }
     },
 
