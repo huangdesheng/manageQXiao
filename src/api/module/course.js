@@ -174,3 +174,19 @@ export function programStoryDetails(params, config) {
     .then(res => res.data)
     .catch(e => console.log(e));
 }
+
+// Q学堂课程标题
+export function programTitle(config) {
+  return ax.get(`/course/title`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+// 故事库课程标题
+export function programStoryTitle(config) {
+  return ax.get(`/story/title`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+

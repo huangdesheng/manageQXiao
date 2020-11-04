@@ -36,6 +36,11 @@
     <div class="page-bd">
       <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="序号" type="index" align="center"></el-table-column>
+         <el-table-column label="课程名称" prop="parentTitle" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="handleCourseDetailt(scope.row.parentId)">{{scope.row.parentTitle}}</el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="内容名称" prop="title" align="center">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="handleEdit(scope.row.id,1)">{{scope.row.title}}</el-button>
@@ -46,6 +51,7 @@
         
         <el-table-column label="状态" align="center">
            <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">未发布</span>
             <span v-if="scope.row.status === 1">发布中</span>
           </template>
         </el-table-column>
@@ -83,6 +89,11 @@
     <!-- 新增 和 编辑 -->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form">
+        <el-form-item label="课程名称" :label-width="formLabelWidth" v-if="programLists.length">
+          <el-select v-model="form.parentId" placeholder="请选择课程">
+            <el-option v-for="item in programLists" :key="item.parentId" :label="item.parentTitle" :value="item.parentId"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="课程主图" :label-width="formLabelWidth">
           <div class="photo">
             <div v-if="form.cover === '' || form.cover === null">
@@ -127,6 +138,54 @@
         <audio :src="form.contentUrl" controls autoplay style="width= 100%; height=100%; object-fit: fill" id="audio"></audio>
       </div>
     </el-dialog>
+
+
+    <!-- 查看课程详情 -->
+    <el-dialog title="课程预览" :visible.sync="FormVisibleCourseStatus" v-if="obj">
+      <el-form :model="obj">
+        <el-form-item label="课程主图" :label-width="formLabelWidth">
+          <div class="photo">
+            <div v-if="obj.cover === '' || obj.cover === null">
+              <i class="el-icon-plus"></i>
+            </div>
+            <div v-else style="border:none" class="img">
+              <img alt :style="{backgroundImage: `url(${obj.cover})`}" class="photoImg" />
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="课程标题" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.title" autocomplete="off"></el-input> -->
+          <p class="p">{{obj.title}}</p>
+        </el-form-item>
+        <el-form-item label="课程内容" :label-width="formLabelWidth">
+          <p class="p">{{obj.title}}</p>
+          <!-- <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input> -->
+        </el-form-item>
+        <el-form-item label="课程标签" :label-width="formLabelWidth">
+          <div class="check_type">
+            <span v-for="(item,index) in obj.tags" :key="index" class="check_span">{{item.value}}</span>
+          </div>
+             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
+             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
+         
+          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
+        </el-form-item>
+        <el-form-item label="年级选择" :label-width="formLabelWidth">
+          <div class="check_type">
+            <span v-for="(item,index) in obj.grades" :key="index" class="check_span">{{gradeList[item].text}}</span>
+          </div>
+             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
+             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
+         
+          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
+        </el-form-item>
+        <!-- <el-form-item label="年级选择" :label-width="formLabelWidth">
+          <el-select v-model="form.grades" :multiple="true">
+            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item> -->
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -141,7 +200,7 @@ export default {
         pageNum: 1,
         state:0,
         keyword:'',
-        id:this.$route.params.id
+        id:this.$route.query.id
       },
       dialogFormVisible:false,
       dialogFormVisibleCheck:false,
@@ -153,22 +212,47 @@ export default {
       title:'',
       form:{
           cover: "",
-          storyId:this.$route.params.id,
+          storyId:this.$route.query.id,
           title: "",
           contentUrl:"",
           duration:''
       },
-      totalCount:0
+      totalCount:0,
+      obj:{},
+      FormVisibleCourseStatus:false,
+      programLists:[]
     };
   },
   mixins:[statusList],
   methods: {
+    async handleCourseDetailt(id) {
+      let res = await service.storyDetails(id)
+      if(res.errorCode === 0) {
+        this.obj = res.data
+        this.FormVisibleCourseStatus = true
+      }
+    },
+    // 年级查询
+    async queryGradeList() {
+      let res = await service.queryGradeList(4, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.errorCode === 0) {
+       this.gradeList = res.data.concat([{text:'',value:''}])
+      }
+    },
+    async programStoryTitle() {
+      let res = await service.programStoryTitle()
+      if(res.errorCode === 0) {
+        this.programLists = res.data
+      }
+    },
     // 添加内容
     handleAdd() {
       this.title = '上传内容'
       this.form = {
         cover: "",
-        storyId:this.$route.params.id,
+        storyId:this.$route.query.id,
         title: "",
         contentUrl:'',
         duration:''
@@ -190,27 +274,7 @@ export default {
           this.form.cover = res.data[0].url;
       }
     },
-
-    //上传视频
-    // handleChooseVideo(e) {
-    //   var file = e.target.files[0];
-    //   this.uploadVideo(file);
-      // this.files = file
-      // this.imageStatus = !this.imageStatus;
-      // this.loadStatus = !this.loadStatus;
-      // let videoSize = file.size;
-      // if (videoSize < 50000000) {
-      //   this.uploadVideo(file);
-      // } else {
-      //   this.imageStatus = !this.imageStatus;
-      //   this.loadStatus = !this.loadStatus;
-      //   this.$toast({
-      //     duration: 3000,
-      //     message: "视频太大,请限制在50兆内"
-      //   });
-      // }
-    // },
-
+    // 上传视频
     async uploadVideo(file) {
       if(file.target.files.length){
         this.percentage = 0
@@ -244,22 +308,10 @@ export default {
         });
       }
     },
-
-
-    // // 新增标签
-    // handleAddType(){
-    //   this.form.tags.push({
-    //     value:""
-    //   })
-    // },
-    // // 删除标签
-    // handleDelete(index) {
-    //   this.form.tags.splice(index, 1)
-    // },
     // 提交内容
     async handleSubmit() {
-      let {title, cover, contentUrl} = this.form
-      if(title.trim().length === 0 || cover === '' || contentUrl === '') {
+      let {title, cover, contentUrl,parentId} = this.form
+      if(title.trim().length === 0 || cover === '' || contentUrl === '',parentId === '') {
         this.$message('请填写完整信息内容')
         return false
       }
@@ -270,12 +322,7 @@ export default {
       })
       if(res.errorCode === 0) {
         var audio = document.getElementById('audio')
-        
-        // if(audio.paused) {
-        //   audio.paused()
-        // }else{
-           audio.pause()
-        // }
+        audio.pause()
         this.dialogFormVisible = false
         this.storyProgramList(this.query)
       }
@@ -325,7 +372,23 @@ export default {
     },
 
     // 发布
-    async handleSend(id) {
+    handleSend(id) {
+      let that = this
+      this.$confirm(`确定发布该课程吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.publishStoryProgram(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
+    // 发布
+    async publishStoryProgram(id) {
        let res = await service.publishStoryProgram({
         id
       },{
@@ -383,6 +446,8 @@ export default {
   },
   activated() {
     this.storyProgramList(this.query)
+    this.queryGradeList()
+    this.programStoryTitle()
   }
 };
 </script>
@@ -480,5 +545,11 @@ export default {
   span{
     margin-left:10px;
   }
+}
+
+.check_span{
+    background: #f6f6f6;
+    padding:5px 20px;
+    margin-right:10px;
 }
 </style>

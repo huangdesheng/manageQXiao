@@ -220,6 +220,8 @@ export default {
     },
     //新增权限
     async addPermit(params = {}) {
+      console.log(params)
+      return false
       let res = await service.addPermit(params);
       if (res.errorCode === 0) {
         this.dialogAdd = false;
@@ -235,6 +237,7 @@ export default {
     },
     //编辑权限
     async updatePermit(params = {}) {
+      console.log(params)
       let res = await service.updatePermit(params);
       if (res.errorCode === 0) {
         this.dialogEdit = false;

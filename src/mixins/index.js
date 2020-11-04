@@ -506,3 +506,27 @@ export const statusList = {
     }
   }
 }
+
+const courseLists  = Object.freeze([
+  {
+    id:0,
+    name:'全部'
+  },
+  {
+    id:1,
+    name:'已发布'
+  },
+  {
+    id:2,
+    name:'未发布'
+  },
+])
+
+export const courseList = {
+  data() {
+    return {
+      courseLists
+    }
+  }
+}
+

@@ -11,7 +11,7 @@
           label-position="left"
         >
           <el-form-item label="内容名称" prop="title">
-            <el-input v-model="query.keyword"></el-input>
+            <el-input v-model="query.keyword" placeholder="请输入能容名称"></el-input>
           </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="query.state">
@@ -36,6 +36,11 @@
     <div class="page-bd">
       <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="序号" type="index" align="center"></el-table-column>
+        <el-table-column label="课程名称" prop="parentTitle" align="center">
+          <template slot-scope="scope">
+            <el-button size="mini" type="text" @click="handleCourseDetailt(scope.row.parentId)">{{scope.row.parentTitle}}</el-button>
+          </template>
+        </el-table-column>
         <el-table-column label="内容名称" prop="title" align="center">
           <template slot-scope="scope">
             <el-button size="mini" type="text" @click="handleEdit(scope.row.id,1)">{{scope.row.title}}</el-button>
@@ -46,6 +51,7 @@
         
         <el-table-column label="状态" align="center">
            <template slot-scope="scope">
+             <span v-if="scope.row.status === 0">未发布</span>
             <span v-if="scope.row.status === 1">发布中</span>
           </template>
         </el-table-column>
@@ -83,6 +89,11 @@
     <!-- 新增 和 编辑 -->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form">
+        <el-form-item label="课程名称" :label-width="formLabelWidth" v-if="programLists.length">
+          <el-select v-model="form.parentId" placeholder="请选择课程">
+            <el-option v-for="item in programLists" :key="item.parentId" :label="item.parentTitle" :value="item.parentId"></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item label="课程主图" :label-width="formLabelWidth">
           <div class="photo">
             <div v-if="form.cover === '' || form.cover === null">
@@ -125,6 +136,54 @@
         <video :src="form.videoUrl" controls autoplay style="width= 100%; height=100%; object-fit: fill" id="contain"></video>
       </div>
     </el-dialog>
+
+
+    <!-- 查看课程详情 -->
+    <el-dialog title="课程预览" :visible.sync="FormVisibleCourseStatus" v-if="obj">
+      <el-form :model="obj">
+        <el-form-item label="课程主图" :label-width="formLabelWidth">
+          <div class="photo">
+            <div v-if="obj.cover === '' || obj.cover === null">
+              <i class="el-icon-plus"></i>
+            </div>
+            <div v-else style="border:none" class="img">
+              <img alt :style="{backgroundImage: `url(${obj.cover})`}" class="photoImg" />
+            </div>
+          </div>
+        </el-form-item>
+        <el-form-item label="课程标题" :label-width="formLabelWidth">
+          <!-- <el-input v-model="form.title" autocomplete="off"></el-input> -->
+          <p class="p">{{obj.title}}</p>
+        </el-form-item>
+        <el-form-item label="课程内容" :label-width="formLabelWidth">
+          <p class="p">{{obj.title}}</p>
+          <!-- <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input> -->
+        </el-form-item>
+        <el-form-item label="课程标签" :label-width="formLabelWidth">
+          <div class="check_type">
+            <span v-for="(item,index) in obj.tags" :key="index" class="check_span">{{item.value}}</span>
+          </div>
+             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
+             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
+         
+          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
+        </el-form-item>
+        <el-form-item label="年级选择" :label-width="formLabelWidth">
+          <div class="check_type">
+            <span v-for="(item,index) in obj.grades" :key="index" class="check_span">{{gradeList[item].text}}</span>
+          </div>
+             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
+             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
+         
+          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
+        </el-form-item>
+        <!-- <el-form-item label="年级选择" :label-width="formLabelWidth">
+          <el-select v-model="form.grades" :multiple="true">
+            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
+          </el-select>
+        </el-form-item> -->
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -139,7 +198,7 @@ export default {
         pageNum: 1,
         state:0,
         keyword:'',
-        id:this.$route.params.id
+        id:this.$route.query.id
       },
       dialogFormVisible:false,
       dialogFormVisibleCheck:false,
@@ -151,31 +210,59 @@ export default {
       title:'',
       form:{
           cover: "",
-          courseId:this.$route.params.id,
           title: "",
           videoUrl:'',
           videoImg:'',
           duration:'',
           height:'',
-          width:''
+          width:'',
+          parentId:''
       },
-      totalCount:0
+      totalCount:0,
+
+      FormVisibleCourseStatus:false,
+      obj:null,
+      programLists:[]
     };
   },
   mixins:[statusList],
   methods: {
+    // 查询课程详情
+    async handleCourseDetailt(id) {
+      let res = await service.courseDetails(id)
+      if(res.errorCode === 0) {
+        this.obj = res.data
+        this.FormVisibleCourseStatus = true
+      }
+    },
+    // 年级查询
+    async queryGradeList() {
+      let res = await service.queryGradeList(4, {
+        headers: { "Content-Type": "application/json" },
+      });
+      if (res.errorCode === 0) {
+       this.gradeList = res.data.concat([{text:'',value:''}])
+      }
+    },
+
+    async programTitle() {
+      let res = await service.programTitle()
+      if(res.errorCode === 0) {
+        this.programLists = res.data
+      }
+    }, 
     // 添加内容
     handleAdd() {
       this.title = '上传内容'
       this.form = {
         cover: "",
-        courseId:this.$route.params.id,
         title: "",
         videoUrl:'',
         videoImg:'',
         duration:'',
         height:'',
-        width:''
+        width:'',
+        parentId:''
       }
       this.dialogFormVisible = true
     },
@@ -267,8 +354,8 @@ export default {
     // },
     // 提交内容
     async handleSubmit() {
-      let {title, cover, videoUrl} = this.form
-      if(title.trim().length === 0 || cover === '' || videoUrl === '') {
+      let {title, cover, videoUrl,parentId} = this.form
+      if(title.trim().length === 0 || cover === '' || videoUrl === '',parentId === '') {
         this.$message('请填写完整信息内容')
         return false
       }
@@ -296,7 +383,7 @@ export default {
         }
       }
     },
-
+// 删除课程
     handleDelete(id) {
       let that = this
       this.$confirm(`确定删除吗?`, "提示", {
@@ -313,7 +400,7 @@ export default {
     },
 
 
-    // 删除课程
+    
     async programDelete(id) {
       let res = await service.programDelete({
         id
@@ -328,7 +415,23 @@ export default {
     },
 
     // 发布
-    async handleSend(id) {
+    handleSend(id) {
+      let that = this
+      this.$confirm(`确定发布该课程吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.publishProgram(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
+    // 发布
+    async publishProgram(id) {
        let res = await service.publishProgram({
         id
       },{
@@ -385,7 +488,11 @@ export default {
     }
   },
   activated() {
+    
     this.programList(this.query)
+    this.queryGradeList()
+    this.programTitle()
+    
   }
 };
 </script>
@@ -450,7 +557,6 @@ export default {
 }
 
 .check{
-  
   div{
     display: flex;
     justify-content: center;
@@ -484,5 +590,13 @@ export default {
   span{
     margin-left:10px;
   }
+}
+
+
+
+.check_span{
+    background: #f6f6f6;
+    padding:5px 20px;
+    margin-right:10px;
 }
 </style>

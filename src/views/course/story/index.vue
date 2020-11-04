@@ -5,8 +5,28 @@
         <el-form
           class="demo-form-inline"
           size="small"
+          :inline="true"
+          :model="query"
+          label-width="70px"
           label-position="left"
         >
+          <el-form-item label="课程名称" prop="title">
+            <el-input v-model="query.keyword" placeholder="请输入课程名称"></el-input>
+          </el-form-item>
+          <el-form-item label="状态">
+            <el-select v-model="query.state">
+              <el-option
+                v-for="item in courseLists"
+                :key="item.id"
+                :label="item.name"
+                :value="item.id"
+              ></el-option>
+            </el-select>
+          </el-form-item>
+         
+          <el-form-item>
+            <el-button type="primary" @click="handleSearch">查询</el-button>
+          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleAdd">新增课程</el-button>
           </el-form-item>
@@ -28,6 +48,7 @@
         
         <el-table-column label="状态" align="center">
            <template slot-scope="scope">
+            <span v-if="scope.row.status === 0">未发布</span>
             <span v-if="scope.row.status === 1">发布中</span>
           </template>
          
@@ -64,7 +85,7 @@
       </div>
     </div>
 
-    <!-- 新增 和 编辑 -->
+    <!-- 新增 和 编辑 课程-->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="课程主图" :label-width="formLabelWidth">
@@ -149,19 +170,72 @@
         </el-form-item> -->
       </el-form>
     </el-dialog>
+
+
+    <!-- 新增 和 编辑 内容 -->
+    <el-dialog :title="title" :visible.sync="FormVisibleContentStatus">
+      <el-form :model="formContent">
+        <el-form-item label="课程主图" :label-width="formLabelWidth">
+          <div class="photo">
+            <div v-if="formContent.cover === '' || formContent.cover === null">
+              <i class="el-icon-plus"></i>
+            </div>
+            <div v-else style="border:none" class="img">
+              <img alt :style="{backgroundImage: `url(${formContent.cover})`}" class="photoImg" />
+            </div>
+            <input type="file" @change="uploadImg($event,2)" />
+          </div>
+        </el-form-item>
+        <el-form-item label="课程标题" :label-width="formLabelWidth">
+          <el-input v-model="formContent.title" autocomplete="off"></el-input>
+        </el-form-item>
+
+        <el-form-item label="上传音频" :label-width="formLabelWidth" class="uploadAudio">
+          <div class="photo">
+            <div v-if="formContent.contentUrl === '' && !videoStatus" class="audit">
+              <i class="el-icon-plus"></i>
+              <span>上传音频</span>
+            </div>
+            <el-progress type="circle" :percentage="percentage" v-else-if="formContent.contentUrl === ''&& videoStatus"></el-progress>
+            <!-- <div v-else style="border:none" class="img">
+              <img alt :style="{backgroundImage: `url(${form.videoImg})`}" class="photoImg" />
+            </div> -->
+           
+            <audio :src="form.contentUrl" v-else controls width="400px" id="audio" autoplay></audio>
+            <input type="file" @change="uploadVideo($event,1)" accept="audio/*" capture="camcorder"/>
+          </div>
+        </el-form-item>
+        
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleContentSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
 import service from "@/api";
+import axios from "axios";
+import { courseList } from '@/mixins/index'
 export default {
+  mixins:[courseList],
   data() {
     return {
       query: {
         pageSize: 20,
         pageNum: 1,
+        state:0,
+        keyword:''
       },
+      // 课程
       dialogFormVisible:false,
       dialogFormVisibleCheck:false,
+      // 内容
+      FormVisibleContentStatus:false,
+      videoStatus:false,
+      percentage:0,
+
       tableData: [],
       formLabelWidth: '120px',
       gradeList:[],
@@ -177,11 +251,95 @@ export default {
           ],
           title: ""
       },
+      formContent:{
+          cover: "",
+          parentId:'',
+          title: "",
+          contentUrl:"",
+          duration:''
+      },
       totalCount:0
     };
   },
   methods: {
-    // 添加内容
+    // 上传内容
+    handleAddContent(id) {
+      this.FormVisibleContentStatus = true;
+      this.formContent.parentId = id
+    },
+    // 上传内容图片
+    async uploadImg(img, index) {
+      var fileLength = Array.from(img.target.files);
+      var formData = new FormData();
+      formData.append("files", fileLength[0]);
+      let config = {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      };
+      let res = await service.filesUpload(formData, config);
+      if (res.errorCode === 0) {
+        if(index === 1) {
+          this.form.cover = res.data[0].url;
+        }else if(index === 2) {
+          this.formContent.cover = res.data[0].url;
+        }
+      }
+    },
+    // 上传内容视频
+    async uploadVideo(file) {
+      if(file.target.files.length){
+        this.percentage = 0
+        this.form.contentUrl =''
+        var formData = new FormData(); //构造一个 FormData，把后台需要发送的参数添加
+        formData.append("file", file.target.files[0]); //接口需要传递的参数
+        axios({
+          method: "post",
+          url: "https://video.qxiao.net/api/upload/audio",
+          data: formData,
+          headers: {
+            "Content-Type": "multipart/form-data"
+          },
+          onUploadProgress: progressEvent => {
+            this.videoStatus = true
+            let complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
+            console.log(complete)
+            if(complete>2){
+              this.percentage = complete-5
+            }
+          },
+        }).then(res => {
+          if (res.data.errorCode === 0) {
+            this.formContent.contentUrl = res.data.data.audioUrl;
+            this.formContent.duration = res.data.data.duration
+            this.percentage = 100
+            this.videoStatus = false
+          }
+        });
+      }
+    },
+    
+    // 提交内容
+    async handleContentSubmit() {
+      let {title, cover, contentUrl} = this.formContent
+      if(title.trim().length === 0 || cover === '' || contentUrl === '') {
+        this.$message('请填写完整信息内容')
+        return false
+      }
+      let res = await service.addStoryProgram(this.formContent,{
+        headers: {
+         "Content-Type": "application/json"
+        }
+      })
+      if(res.errorCode === 0) {
+        var audio = document.getElementById('audio')
+        audio.pause()
+        this.FormVisibleContentStatus = false
+        this.$router.push('/course/story/story-list')
+      }
+    },
+
+    // 添加课程
     handleAdd() {
       this.title = '新增课程'
       this.form = {
@@ -195,38 +353,21 @@ export default {
           title: ""
       }
       this.dialogFormVisible = true
-      // this.$set(this.form, grades, [])
     },
-    // 上传图片
-    async uploadImg(img, index) {
-      var fileLength = Array.from(img.target.files);
-      var formData = new FormData();
-      formData.append("files", fileLength[0]);
-      let config = {
-        headers: {
-          "Content-Type": "multipart/form-data"
-        }
-      };
-      let res = await service.filesUpload(formData, config);
-      if (res.errorCode === 0) {
-        this.form.cover = res.data[0].url;
-      }
-    },
+
     // 新增标签
     handleAddType(){
       this.form.tags.push({
         value:""
       })
     },
-    // change() {
 
-    //   this.$forceUpdate()
-    // },
     // 删除标签
     handleDelete(index) {
       this.form.tags.splice(index, 1)
     },
-    // 提交内容
+
+    // 提交课程
     async handleSubmit() {
       let tagList = this.form.tags.filter(item => item.value === '')
       let {title, cover, intro} = this.form
@@ -260,6 +401,7 @@ export default {
       }
     },
 
+    // 删除课程
     handleDeleteStory(id) {
       let that = this
       this.$confirm(`确定删除吗?`, "提示", {
@@ -274,8 +416,6 @@ export default {
           return false;
         });
     },
-
-    // 删除课程
     async deleteStory(id) {
       let res = await service.deleteStory({
         id
@@ -289,8 +429,24 @@ export default {
       }
     },
 
+     // 发布
+    handleSend(id) {
+      let that = this
+      this.$confirm(`确定发布该课程吗?`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+        .then(function() {
+          that.publishStory(id);
+        })
+        .catch(error => {
+          return false;
+        });
+    },
+
     // 发布
-    async handleSend(id) {
+    async publishStory(id) {
        let res = await service.publishStory({
         id
       },{
@@ -317,29 +473,22 @@ export default {
       }
     },
 
-    handleAddContent(id) {
-      this.$router.push({
-        path:`/course/story/story-list/${id}`
-      })
-    },
-
+    // 搜索
     handleSearch() {
       this.query.pageNum = 1;
       this.storyList(this.query)
     },
+    // 根据页数查询
     handleCurrentChange(curr) {
       this.query.pageNum = curr;
       this.storyList(this.query)
     },
+    // 当前页条数
     handleSizeChange(size) {
       this.query.pageSize = size;
       this.storyList(this.query)
     },
 
-    // handleSelectGrade() {
-    //   this.$set(this.form, grades, [])
-    //   this.queryGradeList()
-    // },
     // 年级查询
     async queryGradeList() {
       let res = await service.queryGradeList(4, {
@@ -347,10 +496,10 @@ export default {
       });
       if (res.errorCode === 0) {
        this.gradeList = res.data.concat([{text:'',value:''}])
-      //  console.log(this.gradeList)
       }
     },
-
+    
+    // 故事库列表
     async storyList(params) {
       let res = await service.storyList(params, {
         headers: { "Content-Type": "application/json" },
@@ -360,9 +509,6 @@ export default {
         this.totalCount = res.data.totalCount;
       }
     },
-
-    
-  
   },
   activated() {
     this.queryGradeList(this.query)
@@ -444,5 +590,28 @@ export default {
 .p{
   font-size:15px;
   color:#606266
+}
+
+.photo /deep/ .el-progress-circle{
+  width:100px !important;
+  height:100px !important;
+}
+
+.page /deep/ .el-progress{
+  background: #fff;
+}
+
+.audit{
+  width: 120px !important;
+  height:60px !important;
+  background:#f6f6f6 !important;
+  color:#0099ff !important;
+  span{
+    margin-left:10px;
+  }
+}
+
+.uploadAudio /deep/ .el-form-item__label{
+  line-height:60px;
 }
 </style>
