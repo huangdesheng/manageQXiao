@@ -10,7 +10,10 @@
           label-width="70px"
           label-position="left"
         >
-          <el-form-item label="内容名称" prop="title">
+          <el-form-item label="课程名称" prop="parentTitle">
+            <el-input v-model="query.parentTitle" placeholder="请输入课程名称"></el-input>
+          </el-form-item>
+          <el-form-item label="内容名称" prop="keyword" placeholder="请输入内容名称">
             <el-input v-model="query.keyword"></el-input>
           </el-form-item>
           <el-form-item label="状态">
@@ -106,7 +109,7 @@
           </div>
         </el-form-item>
         <el-form-item label="课程标题" :label-width="formLabelWidth">
-          <el-input v-model="form.title" autocomplete="off"></el-input>
+          <el-input v-model="form.title" autocomplete="off" placeholder="请输入课程标题"></el-input>
         </el-form-item>
 
         <el-form-item label="上传音频" :label-width="formLabelWidth">
@@ -158,7 +161,7 @@
           <p class="p">{{obj.title}}</p>
         </el-form-item>
         <el-form-item label="课程内容" :label-width="formLabelWidth">
-          <p class="p">{{obj.title}}</p>
+          <p class="p">{{obj.intro}}</p>
           <!-- <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input> -->
         </el-form-item>
         <el-form-item label="课程标签" :label-width="formLabelWidth">
@@ -200,6 +203,7 @@ export default {
         pageNum: 1,
         state:0,
         keyword:'',
+        parentTitle:'',
         id:this.$route.query.id
       },
       dialogFormVisible:false,

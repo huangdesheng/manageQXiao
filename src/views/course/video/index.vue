@@ -100,10 +100,10 @@
           </div>
         </el-form-item>
         <el-form-item label="课程标题" :label-width="formLabelWidth">
-          <el-input v-model="form.title" autocomplete="off"></el-input>
+          <el-input v-model="form.title" autocomplete="off" placeholder="请输入课程标题"></el-input>
         </el-form-item>
         <el-form-item label="课程内容" :label-width="formLabelWidth">
-          <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input>
+          <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6" placeholder="请输入课程内容"></el-input>
         </el-form-item>
         <el-form-item label="课程标签" :label-width="formLabelWidth">
           <div class="type" v-for="(item,index) in form.tags" :key="index">
@@ -186,7 +186,7 @@
           </div>
         </el-form-item>
         <el-form-item label="课程标题" :label-width="formLabelWidth">
-          <el-input v-model="formContent.title" autocomplete="off"></el-input>
+          <el-input v-model="formContent.title" autocomplete="off" placeholder="请输入课程标题"></el-input>
         </el-form-item>
 
         <el-form-item label="上传视频" :label-width="formLabelWidth">
@@ -204,7 +204,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button @click="FormVisibleContentStatus = false">取 消</el-button>
         <el-button type="primary" @click="handleContentSubmit">确 定</el-button>
       </div>
     </el-dialog>
