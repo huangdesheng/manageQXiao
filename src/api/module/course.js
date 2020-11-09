@@ -189,4 +189,13 @@ export function programStoryTitle(config) {
     .catch(e => console.log(e));
 }
 
+// 历史标签
+export function courseTag(params,config) {
+  return ax.get(`/course/tag/${params}`, config)
+    .then(res => res.data)
+    .catch(e => console.log(e));
+}
+
+
+
 

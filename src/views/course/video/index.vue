@@ -1,5 +1,6 @@
 <template>
   <div class="page">
+    <!-- ========== 搜索部分 =========== -->
     <div class="page-hd">
       <div class="page-form">
         <el-form
@@ -33,6 +34,8 @@
         </el-form>
       </div>
     </div>
+
+    <!-- ========== 内容部分 =========== -->
     <div class="page-bd">
       <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="序号" type="index" align="center"></el-table-column>
@@ -85,7 +88,7 @@
       </div>
     </div>
 
-    <!-- 新增 和 编辑 课程-->
+    <!-- ========== 新增 和 编辑 课程 =========== -->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="课程主图" :label-width="formLabelWidth">
@@ -104,6 +107,11 @@
         </el-form-item>
         <el-form-item label="课程内容" :label-width="formLabelWidth">
           <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6" placeholder="请输入课程内容"></el-input>
+        </el-form-item>
+        <el-form-item label="历史标签" :label-width="formLabelWidth" v-if="!form.id">
+          <el-select v-model="historyTag" :multiple="true">
+            <el-option v-for="item in tag" :key="item.value" :label="item.value" :value="item"></el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="课程标签" :label-width="formLabelWidth">
           <div class="type" v-for="(item,index) in form.tags" :key="index">
@@ -124,7 +132,7 @@
       </div>
     </el-dialog>
     
-    <!-- 查看详情 -->
+     <!-- ========== 查看课程详情 =========== -->
     <el-dialog title="课程预览" :visible.sync="dialogFormVisibleCheck" custom-class="check">
       <el-form :model="form">
         <el-form-item label="课程主图" :label-width="formLabelWidth">
@@ -138,40 +146,25 @@
           </div>
         </el-form-item>
         <el-form-item label="课程标题" :label-width="formLabelWidth">
-          <!-- <el-input v-model="form.title" autocomplete="off"></el-input> -->
           <p class="p">{{form.title}}</p>
         </el-form-item>
         <el-form-item label="课程简介" :label-width="formLabelWidth">
           <p class="p">{{form.intro}}</p>
-          <!-- <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input> -->
         </el-form-item>
         <el-form-item label="课程标签" :label-width="formLabelWidth">
           <div class="check_type">
             <span v-for="(item,index) in form.tags" :key="index" class="check_span">{{item.value}}</span>
           </div>
-             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
-             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
-         
-          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
         </el-form-item>
         <el-form-item label="年级选择" :label-width="formLabelWidth">
           <div class="check_type">
             <span v-for="(item,index) in form.grades" :key="index" class="check_span">{{gradeList[item-1].text}}</span>
           </div>
-             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
-             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
-         
-          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
         </el-form-item>
-        <!-- <el-form-item label="年级选择" :label-width="formLabelWidth">
-          <el-select v-model="form.grades" :multiple="true">
-            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item> -->
       </el-form>
     </el-dialog>
 
-    <!-- 新增 和 编辑 内容 -->
+    <!-- ========== 新增 和 编辑 视频内容 =========== -->
     <el-dialog :title="title" :visible.sync="FormVisibleContentStatus">
       <el-form :model="formContent">
         <el-form-item label="课程主图" :label-width="formLabelWidth">
@@ -208,6 +201,7 @@
         <el-button type="primary" @click="handleContentSubmit">确 定</el-button>
       </div>
     </el-dialog>
+
   </div>
 </template>
 <script>
@@ -224,27 +218,6 @@ export default {
         state:0,
         keyword:''
       },
-      dialogFormVisible:false,
-      dialogFormVisibleCheck:false,
-      // 内容上传
-      FormVisibleContentStatus:false,
-      videoStatus:false,
-      percentage:0,
-      formContent:{
-          cover: "",
-          parentId:this.$route.query.id,
-          title: "",
-          videoUrl:'',
-          videoImg:'',
-          duration:'',
-          height:'',
-          width:''
-      },
-      
-      tableData: [],
-      formLabelWidth: '120px',
-      gradeList:[],
-      title:'',
       form:{
         	cover: "",
           grades: [],
@@ -255,11 +228,41 @@ export default {
           ],
           title: ""
       },
-      totalCount:0
+       formContent:{
+          cover: "",
+          parentId:this.$route.query.id,
+          title: "",
+          videoUrl:'',
+          videoImg:'',
+          duration:'',
+          height:'',
+          width:''
+      },
+      historyTag:[],
+      dialogFormVisible:false,
+      dialogFormVisibleCheck:false,
+      FormVisibleContentStatus:false,
+      videoStatus:false,
+      percentage:0,
+      tableData: [],
+      formLabelWidth: '120px',
+      gradeList:[],
+      title:'',
+      totalCount:0,
+      tag:[]
     };
   },
   methods: {
-    // 上传内容
+    // 查询历史标签====================================
+    async courseTag() {
+      let res =  await service.courseTag(1)
+      if(res.errorCode === 0) {
+        this.tag = res.data
+      }else{
+        this.tag = []
+      }
+    },
+    // 视频上传内容======================================
     handleAddContent(id) {
       this.FormVisibleContentStatus = true;
       this.formContent = {
@@ -274,7 +277,7 @@ export default {
       }
     },
     
-    // 上传图片
+    // 上传图片=======================================
     async uploadImg(img, index) {
       var fileLength = Array.from(img.target.files);
       var formData = new FormData();
@@ -294,7 +297,7 @@ export default {
       }
     },
     
-    // 视频上传
+    // 视频上传========================================
     async uploadVideo(file) {
       if(file.target.files.length){
         this.percentage = 0
@@ -331,7 +334,7 @@ export default {
       }
     },
 
-    // 提交内容
+    // 提交视频内容====================================================
     async handleContentSubmit() {
       let {title, cover, videoUrl} = this.formContent
       if(title.trim().length === 0 || cover === '' || videoUrl === '') {
@@ -350,7 +353,7 @@ export default {
     },
 
 
-    // 添加内容
+    // 添加课程内容====================================================
     handleAdd() {
       this.title = '新增课程'
       this.form = {
@@ -365,25 +368,29 @@ export default {
       }
       this.dialogFormVisible = true
     },
-    // 新增标签
+
+    // 新增课程标签========================================================
     handleAddType(){
       this.form.tags.push({
         value:""
       })
     },
-    // 删除标签
+
+    // 删除课程标签=======================================================
     handleDelete(index) {
       this.form.tags.splice(index, 1)
     },
-    // 提交内容
+
+    // 提交课程内容======================================================
     async handleSubmit() {
       let tagList = this.form.tags.filter(item => item.value === '')
-      let {title, cover, intro} = this.form
+      let {title, cover, intro,tags} = this.form
       if(title.trim().length === 0 || cover === '' || intro.trim().length === 0 || tagList.length > 0) {
         this.$message('请填写完整信息内容')
         return false
       }
-      console.log(this.form)
+      let tagLists = this.historyTag.concat(tags)
+      this.form.tags =tagLists
       let res = await service.addCourse(this.form,{
         headers: {
          "Content-Type": "application/json"
@@ -395,7 +402,7 @@ export default {
       }
     },
     
-    // 编辑课程
+    // 编辑课程==========================================================
     async handleEdit(id, status) {
       let res = await service.courseDetails(id)
       if(res.errorCode === 0) {
@@ -409,6 +416,7 @@ export default {
       }
     },
 
+    // 删除课程==========================================================
     handleDeleteCourse(id) {
       let that = this
       this.$confirm(`确定删除吗?`, "提示", {
@@ -423,8 +431,6 @@ export default {
           return false;
         });
     },
-
-    // 删除课程
     async deleteCourse(id) {
       let res = await service.deleteCourse({
         id
@@ -438,7 +444,7 @@ export default {
       }
     },
 
-    // 发布
+    // 发布============================================================
     handleSend(id) {
       let that = this
       this.$confirm(`确定发布该课程吗?`, "提示", {
@@ -466,7 +472,7 @@ export default {
       }
     },
    
-    // 推荐
+    // 推荐============================================================
     async handleRecommend (id) {
       let res = await service.recommendCourse({
         id
@@ -493,7 +499,8 @@ export default {
       this.query.pageSize = size;
       this.courseList(this.query)
     },
-    // 年级查询
+
+    // 年级查询============================================================
     async queryGradeList() {
       let res = await service.queryGradeList(4, {
         headers: { "Content-Type": "application/json" },
@@ -502,7 +509,7 @@ export default {
         this.gradeList = res.data.concat([{text:'',value:''}])
       }
     },
-
+    // 查询课程列表========================================================
     async courseList(params) {
       let res = await service.courseList(params, {
         headers: { "Content-Type": "application/json" },
@@ -516,6 +523,7 @@ export default {
   activated() {
     this.queryGradeList(this.query)
     this.courseList(this.query)
+    this.courseTag()
   }
 };
 </script>

@@ -1,5 +1,6 @@
 <template>
   <div class="page">
+    <!-- =================================================搜索部分 ================================================= -->
     <div class="page-hd">
       <div class="page-form">
         <el-form
@@ -13,8 +14,8 @@
           <el-form-item label="课程名称" prop="parentTitle">
             <el-input v-model="query.parentTitle" placeholder="请输入课程名称"></el-input>
           </el-form-item>
-          <el-form-item label="内容名称" prop="keyword" placeholder="请输入内容名称">
-            <el-input v-model="query.keyword"></el-input>
+          <el-form-item label="内容名称" prop="keyword">
+            <el-input v-model="query.keyword" placeholder="请输入内容名称"></el-input>
           </el-form-item>
           <el-form-item label="状态">
             <el-select v-model="query.state">
@@ -36,6 +37,8 @@
         </el-form>
       </div>
     </div>
+
+     <!-- ================================================= 列表部分 ================================================= -->
     <div class="page-bd">
       <el-table :data="tableData" style="width: 100%" size="small" border>
         <el-table-column label="序号" type="index" align="center"></el-table-column>
@@ -89,7 +92,7 @@
       </div>
     </div>
 
-    <!-- 新增 和 编辑 -->
+    <!-- =================================================== 新增 和 编辑 ======================================================== -->
     <el-dialog :title="title" :visible.sync="dialogFormVisible">
       <el-form :model="form">
         <el-form-item label="课程名称" :label-width="formLabelWidth" v-if="programLists.length">
@@ -133,7 +136,7 @@
       </div>
     </el-dialog>
     
-    <!-- 查看详情 -->
+    <!-- ===================================================== 查看视频详情==================================================== -->
     <el-dialog :visible.sync="dialogFormVisibleCheck" custom-class="check" @closed="handleClosed">
       <div>
         <video :src="form.videoUrl" controls autoplay style="width= 100%; height=100%; object-fit: fill" id="contain"></video>
@@ -141,8 +144,8 @@
     </el-dialog>
 
 
-    <!-- 查看课程详情 -->
-    <el-dialog title="课程预览" :visible.sync="FormVisibleCourseStatus" v-if="obj">
+    <!-- ========================================================查看课程详情===================================================== -->
+    <el-dialog title="课程预览" :visible.sync="FormVisibleCourseStatus" v-if="Object.keys(obj).length">
       <el-form :model="obj">
         <el-form-item label="课程主图" :label-width="formLabelWidth">
           <div class="photo">
@@ -155,38 +158,24 @@
           </div>
         </el-form-item>
         <el-form-item label="课程标题" :label-width="formLabelWidth">
-          <!-- <el-input v-model="form.title" autocomplete="off"></el-input> -->
           <p class="p">{{obj.title}}</p>
         </el-form-item>
         <el-form-item label="课程内容" :label-width="formLabelWidth">
-          <p class="p">{{obj.intro}}</p>
-          <!-- <el-input v-model="form.intro" autocomplete="off" type="textarea" rows="6"></el-input> -->
+          <p class="p">{{obj.intro}}</p>>
         </el-form-item>
         <el-form-item label="课程标签" :label-width="formLabelWidth">
           <div class="check_type">
             <span v-for="(item,index) in obj.tags" :key="index" class="check_span">{{item.value}}</span>
           </div>
-             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
-             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
-         
-          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
         </el-form-item>
         <el-form-item label="年级选择" :label-width="formLabelWidth">
           <div class="check_type">
-            <span v-for="(item,index) in obj.grades" :key="index" class="check_span">{{gradeList[item].text}}</span>
+            <span v-for="(item,index) in obj.grades" :key="index" class="check_span">{{gradeList[item-1].text}}</span>
           </div>
-             <!-- <el-input v-model="item.value" autocomplete="off"></el-input> -->
-             <!-- <i class="el-icon-delete" color="red" @click="handleDelete(index)"></i> -->
-         
-          <!-- <el-button type="primary" @click="handleAddType">新增标签</el-button> -->
         </el-form-item>
-        <!-- <el-form-item label="年级选择" :label-width="formLabelWidth">
-          <el-select v-model="form.grades" :multiple="true">
-            <el-option v-for="item in gradeList" :key="item.value" :label="item.text" :value="item.value"></el-option>
-          </el-select>
-        </el-form-item> -->
       </el-form>
     </el-dialog>
+    
   </div>
 </template>
 <script>
@@ -204,14 +193,6 @@ export default {
         parentTitle:'',
         id:this.$route.query.id
       },
-      dialogFormVisible:false,
-      dialogFormVisibleCheck:false,
-      videoStatus:false,
-      percentage:0,
-      tableData: [],
-      formLabelWidth: '120px',
-      gradeList:[],
-      title:'',
       form:{
           cover: "",
           title: "",
@@ -222,16 +203,24 @@ export default {
           width:'',
           parentId:''
       },
-      totalCount:0,
-
+      dialogFormVisible:false,
+      dialogFormVisibleCheck:false,
       FormVisibleCourseStatus:false,
-      obj:null,
+      videoStatus:false,
+      percentage:0,
+      formLabelWidth: '120px',
+      title:'',
+      totalCount:0,
+      obj:{},
+      tableData: [],
+      gradeList:[],
       programLists:[]
     };
   },
   mixins:[statusList],
   methods: {
-    // 查询课程详情
+
+    // 查询课程详情=====================================
     async handleCourseDetailt(id) {
       let res = await service.courseDetails(id)
       if(res.errorCode === 0) {
@@ -239,7 +228,7 @@ export default {
         this.FormVisibleCourseStatus = true
       }
     },
-    // 年级查询
+    // 年级查询==========================================
     async queryGradeList() {
       let res = await service.queryGradeList(4, {
         headers: { "Content-Type": "application/json" },
@@ -248,14 +237,14 @@ export default {
        this.gradeList = res.data.concat([{text:'',value:''}])
       }
     },
-
+    // 查询课程==========================================
     async programTitle() {
       let res = await service.programTitle()
       if(res.errorCode === 0) {
         this.programLists = res.data
       }
     }, 
-    // 添加内容
+    // 添加内容===========================================
     handleAdd() {
       this.title = '上传内容'
       this.form = {
@@ -270,7 +259,7 @@ export default {
       }
       this.dialogFormVisible = true
     },
-    // 上传图片
+    // 上传图片============================================
     async uploadImg(img, index) {
       var fileLength = Array.from(img.target.files);
       var formData = new FormData();
@@ -286,36 +275,14 @@ export default {
       }
     },
 
-    //上传视频
-    // handleChooseVideo(e) {
-    //   var file = e.target.files[0];
-    //   this.uploadVideo(file);
-      // this.files = file
-      // this.imageStatus = !this.imageStatus;
-      // this.loadStatus = !this.loadStatus;
-      // let videoSize = file.size;
-      // if (videoSize < 50000000) {
-      //   this.uploadVideo(file);
-      // } else {
-      //   this.imageStatus = !this.imageStatus;
-      //   this.loadStatus = !this.loadStatus;
-      //   this.$toast({
-      //     duration: 3000,
-      //     message: "视频太大,请限制在50兆内"
-      //   });
-      // }
-    // },
-
+    //上传视频============================================
     async uploadVideo(file) {
-
       if(file.target.files.length){
         this.percentage = 0
         this.form.videoImg =''
         this.form.videoUrl = ''
         var formData = new FormData(); //构造一个 FormData，把后台需要发送的参数添加
-        // if (file) {
-          formData.append("file", file.target.files[0]); //接口需要传递的参数
-        // }
+        formData.append("file", file.target.files[0]); //接口需要传递的参数
         axios({
           method: "post",
           url: "https://video.qxiao.net/api/upload",
@@ -326,7 +293,6 @@ export default {
           onUploadProgress: progressEvent => {
             this.videoStatus = true
             let complete = (progressEvent.loaded / progressEvent.total * 100 | 0)
-            console.log(complete)
             if(complete>2){
               this.percentage = complete-5
             }
@@ -346,17 +312,7 @@ export default {
     },
 
 
-    // // 新增标签
-    // handleAddType(){
-    //   this.form.tags.push({
-    //     value:""
-    //   })
-    // },
-    // // 删除标签
-    // handleDelete(index) {
-    //   this.form.tags.splice(index, 1)
-    // },
-    // 提交内容
+    // 提交内容======================================
     async handleSubmit() {
       let {title, cover, videoUrl,parentId} = this.form
       if(title.trim().length === 0 || cover === '' || videoUrl === '',parentId === '') {
@@ -373,8 +329,9 @@ export default {
         this.programList(this.query)
       }
     },
+
     
-    // 编辑课程
+    // 编辑课程=====================================
     async handleEdit(id, status) {
       let res = await service.programDetails(id)
       if(res.errorCode === 0) {
@@ -387,7 +344,8 @@ export default {
         }
       }
     },
-// 删除课程
+
+    // 删除课程=====================================
     handleDelete(id) {
       let that = this
       this.$confirm(`确定删除吗?`, "提示", {
@@ -402,9 +360,6 @@ export default {
           return false;
         });
     },
-
-
-    
     async programDelete(id) {
       let res = await service.programDelete({
         id
@@ -418,7 +373,7 @@ export default {
       }
     },
 
-    // 发布
+    // 发布========================================
     handleSend(id) {
       let that = this
       this.$confirm(`确定发布该课程吗?`, "提示", {
@@ -433,8 +388,6 @@ export default {
           return false;
         });
     },
-
-    // 发布
     async publishProgram(id) {
        let res = await service.publishProgram({
         id
@@ -448,7 +401,7 @@ export default {
       }
     },
    
-    // 推荐
+    // 推荐============================================
     async handleRecommend (id) {
       let res = await service.recommendProgram({
         id
@@ -460,6 +413,11 @@ export default {
       if( res.errorCode === 0 ) {
         this.programList(this.query)
       }
+    },
+    // 关闭视频播放=====================================
+    handleClosed() {
+        let video =  document.getElementById('contain')
+        video.pause()
     },
 
     handleSearch() {
@@ -474,6 +432,7 @@ export default {
       this.query.pageSize = size;
       this.programList(this.query)
     },
+    // 列表数据查询=====================================
     async programList(params) {
       let res = await service.programList(params, {
         headers: { "Content-Type": "application/json" },
@@ -486,13 +445,8 @@ export default {
         this.totalCount = 0
       }
     },
-    handleClosed() {
-      let video =  document.getElementById('video')
-      video.pause()
-    }
   },
   activated() {
-    
     this.programList(this.query)
     this.queryGradeList()
     this.programTitle()

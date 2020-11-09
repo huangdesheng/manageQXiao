@@ -220,8 +220,6 @@ export default {
     },
     //新增权限
     async addPermit(params = {}) {
-      console.log(params)
-      return false
       let res = await service.addPermit(params);
       if (res.errorCode === 0) {
         this.dialogAdd = false;
