@@ -406,8 +406,6 @@ export default {
     },
     // 发布
     async handleSend(row) {
-      console.log("发布");
-      return false;
       let res = await service.couponDetails(row.id);
       if (res.errorCode === 0) {
       } else if (res.errorCode === -1) {

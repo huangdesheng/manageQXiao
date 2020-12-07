@@ -74,11 +74,6 @@ export default {
   },
 
   methods: {
-    // 查询
-    handleCheck() {
-      console.log("handleAdd");
-    },
-
     async allList() {
       let res = await service.allList(this.query, {
         headers: { "Content-Type": "application/json" }
@@ -87,13 +82,10 @@ export default {
       if (res.errorCode === 0) {
         this.tableData = res.data.list;
         this.totalCount = res.data.total;
-      } else if (res.errorCode === -1) {
-      } else if (res.errorCode === 404) {
+      } else{
         this.tableData = [];
-        this.totalCount = "";
-      } else {
-        this.$message(res.errorMsg);
-      }
+        this.totalCount = 0;
+      } 
     },
     handleCheck() {
       this.allList();
@@ -104,9 +96,6 @@ export default {
     },
     handleSizeChange(size) {
       this.query.pageSize = size;
-      this.allList();
-    },
-    handleSearch() {
       this.allList();
     }
   }

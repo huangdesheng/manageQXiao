@@ -8,19 +8,20 @@
         </div>
         <div class="hd-content">
           <div>
-            <p>评星人数</p>
-            <h2>{{params.starCount}}</h2>
+            <p>日评星人数</p>
+            <h2>{{params.incrStarCount}}</h2>
           </div>
-          <div>
+          <!-- <div>
             <p>新增打星用户数</p>
             <h2>{{params.incrStarCount}}</h2>
           </div>
           <div>
             <p>打卡动态数</p>
             <h2>{{params.habitCount}}</h2>
-          </div>
+          </div> -->
           <div>
-            <p>新增动态发布数</p>
+            <!-- <p>新增动态发布数</p> -->
+            <p>日动态发布数</p>
             <h2>{{params.incrHabitCount}}</h2>
           </div>
         </div>
@@ -83,12 +84,12 @@
         </el-table-column>
         <el-table-column
           prop="incrStarCount"
-          label="新增评星人数"
+          label="日评星人数"
           width="180">
         </el-table-column>
         <el-table-column
           prop="incrHabitCount"
-          label="新增动态数">
+          label="日发布动态数">
         </el-table-column>
          <el-table-column
           prop="starCount"

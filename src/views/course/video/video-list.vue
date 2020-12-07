@@ -63,7 +63,7 @@
         </el-table-column>
         <el-table-column label="热度榜" align="center">
           <template slot-scope="scope" v-if="scope.row.status === 1">
-            <el-button size="mini" type="text" v-if="scope.row.recommend === 1" @click="handleRecommend(scope.row.id)">取消</el-button>
+            <el-button size="mini" type="text" v-if="scope.row.recommend === 1" style="color:#FC7878" @click="handleRecommend(scope.row.id)">取消</el-button>
             <el-button size="mini" type="text" v-else-if="scope.row.recommend === 0" @click="handleRecommend(scope.row.id)">推荐</el-button>
           </template>
         </el-table-column>
@@ -439,7 +439,7 @@ export default {
       });
       if (res.errorCode === 0) {
         this.tableData = res.data.list;
-        this.totalCount = res.data.totalCount;
+        this.totalCount = res.data.total;
       }else{
         this.tableData = [];
         this.totalCount = 0

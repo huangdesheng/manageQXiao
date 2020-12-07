@@ -145,7 +145,7 @@ export default {
       ],
       tableData: [],
       checkData: [],
-      totalCount: 20,
+      totalCount: 0,
       dialogFormVisible: false
     };
   },
@@ -165,13 +165,14 @@ export default {
         this.totalCount = res.data.total;
       } else {
         this.tableData = [];
-        this.totalCount = "";
+        this.totalCount = 0;
       }
     },
     // 查询
     handleCheck() {
       this.organList();
     },
+    
     // 查看
     handleTip(row) {
       this.$router.push({
@@ -203,14 +204,11 @@ export default {
     },
     handleCurrentChange(curr) {
       this.query.page = curr;
-      this.couponList();
+      this.organList();
     },
     handleSizeChange(size) {
       this.query.pageSize = size;
-      this.couponList();
-    },
-    handleSearch() {
-      this.couponList();
+      this.organList();
     }
   }
 };

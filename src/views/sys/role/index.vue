@@ -48,7 +48,7 @@
       </div>
     </div>
     <!-- 新增 or 编辑 -->
-    <el-dialog top="40px" :visible.sync="dialogFormVisible" @open="show" @close="close">
+    <el-dialog top="0px" :visible.sync="dialogFormVisible" @open="show" @close="close">
       <span slot="title" class="dialog-title">{{ isShow ? '新增': '编辑' }}</span>
       <el-form ref="form" :model="form" status-icon size="small" :label-width="formLabelWidth">
         <el-form-item
@@ -74,7 +74,6 @@
           <el-input type="textarea" v-model="form.description" :rows="4" placeholder="请输入备注"></el-input>
         </el-form-item>
         <el-form-item label="菜单权限设置">
-          <!--  -->
           <el-tree
             ref="tree"
             :data="menuData"
@@ -218,9 +217,6 @@ export default {
         this.$refs.form.resetFields();
         this.queryRoleList(this.query);
         this.$message({ message: `${res.errorMsg}`, type: "success" });
-      } else if (res.errorCode === -1) {
-        //角色名称已存在
-        this.$message({ message: `${res.errorMsg}`, type: "error" });
       }
     },
     //编辑角色
@@ -257,4 +253,5 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+
 </style>

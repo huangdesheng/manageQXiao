@@ -25,7 +25,6 @@ router.beforeEach((to, from, next) => {
       Nprogress.done();
     } else {
       if (store.getters.menu.length === 0) {
-        // console.log(111111)
         store.dispatch("comm/qxregion");
         //获取权限菜单
         store.dispatch("qxuser/querySystemMenus").then(res => {

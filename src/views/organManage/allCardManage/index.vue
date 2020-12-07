@@ -149,10 +149,6 @@ export default {
   mounted() {
     this.couponList();
   },
-  activated() {
-    this.couponList();
-  },
-
   methods: {
     async couponList() {
       let res = await service.couponList(this.query, {
@@ -161,12 +157,9 @@ export default {
       if (res.errorCode === 0) {
         this.tableData = res.data.list;
         this.totalCount = res.data.total;
-      } else if (res.errorCode === -1) {
-      } else if (res.errorCode === 404) {
-        this.tableData = [];
-        this.totalCount = "";
       } else {
-        this.$message(res.errorMsg);
+        this.tableData = [];
+        this.totalCount = 0;
       }
     },
     handleCheck() {
@@ -179,9 +172,6 @@ export default {
     },
     handleSizeChange(size) {
       this.query.pageSize = size;
-      this.couponList();
-    },
-    handleSearch() {
       this.couponList();
     },
     // 查询
@@ -197,11 +187,7 @@ export default {
       });
       if (res.errorCode === 0) {
         this.couponList();
-      } else if (res.errorCode === -1) {
-      } else if (res.errorCode === 404) {
-      } else {
-        this.$message(res.errorMsg);
-      }
+      } 
     }
   }
 };

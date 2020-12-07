@@ -49,7 +49,7 @@ export function previewCoupon(params, config) {
     .catch(e => console.log(e));
 }
 
-// 
+// 卡券核销明细
 export function chargeLists(params, config) {
   return ax.get(`/coupon/charge`, params, config)
     .then(res => res.data)
